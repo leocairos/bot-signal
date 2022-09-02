@@ -4,6 +4,7 @@ const Exchange = require("./exchange");
 const { sendMessageTelegram } = require("./telegram");
 
 const QUOTE = `${process.env.QUOTE}`;
+const isProduction = `${process.env.NODE_ENV}` === 'production'
 
 async function startMonitor(symbol, interval) {
   const exchange = new Exchange();
@@ -19,25 +20,34 @@ async function startMonitor(symbol, interval) {
     const lastLow = ohlc.low[ohlc.close.length -1];
     const lastClose = ohlc.close[ohlc.close.length -1];
     const txtOHLC = `${lastOpen}, ${lastHigh}, ${lastLow}, ${lastClose}`
-    let isAlert = false
+    const isNumberIndicator = typeof rsi.current === "number" && typeof mfi.current === "number";
+    const isUpperZero = (rsi.current > 0  && mfi.current > 0)
+    const isNumberPIndicator = typeof rsi.previous === "number" && typeof mfi.previous === "number";
+    const isUpperPZero = (rsi.previous > 0  && mfi.previous > 0)
     
     let msg = `${symbol}-${interval} RSI: ${rsi.current}, MFI: ${mfi.current}`
     
-    if (typeof rsi.current === "number" && typeof mfi.current === "number" ){
-      if (rsi.current <= 20 && mfi.current <= 20){
+    if (isNumberIndicator && isUpperZero && isNumberPIndicator && isUpperPZero){
+      const overSold = (rsi.current <= 20 && mfi.current <= 20) &&
+                       (rsi.previous > 20 && mfi.previous > 20)    
+      const overBought = (rsi.current >= 80 && mfi.current >= 80) &&
+                         (rsi.previous < 80 && mfi.previous < 80)
+
+      if (overSold == true){
         msg = `${symbol}-${interval} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`;
-        isAlert = true
-      } else if (rsi.current >= 80 && mfi.current >= 80){
+      } else if (overBought == true){
         msg = `${symbol}-${interval} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`;
-        isAlert = true
       }
       msg += `, EMA14: ${ema14.current}`
       msg += `, EMA100: ${ema100.current}`
       msg += `, EMA200: ${ema200.current}`
       msg += `, OHLC: [${txtOHLC}]`
       
-      console.log(msg)
-      if (isAlert == true) sendMessageTelegram(msg);
+      if (!isProduction) console.log(msg)
+      if (overSold == true || overBought == true) {
+        sendMessageTelegram(msg);
+        if (isProduction) console.log(msg)
+      }
     }
 
   })
@@ -57,7 +67,7 @@ async function startMonitor(symbol, interval) {
 
   console.log(`Monitoring all ${spotFilteredSymbols.length} available with quote asset "${QUOTE}".\n`)
 
-  // spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "15m") )
-  // spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1h") )
-  spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1m") )
+  spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "15m") )
+  spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1h") )
+  //spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1m") )
 })()

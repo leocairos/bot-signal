@@ -40,6 +40,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [ ] SMA
   - [X] EMA
 - [ ] Send formatted Telegram message
+- [X] Check invert conditions to reduce redundant alerts
 - [ ] Connect to Binance Futures API
   - [ ] Rest
   - [ ] Websocket
