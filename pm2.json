@@ -3,7 +3,7 @@
         {
             "name": "bot-signal",
             "script": "npm",
-            "args": "dev",
+            "args": "start",
             "cron_restart": "0 * * * *",
             "max_memory_restart": "1024M",
             "time": true,
