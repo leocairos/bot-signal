@@ -9,9 +9,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 
 <br/>
 
-#
 ## 🚀 How to execute
-# 
 
 * Clone this repository
 * Access the folder
@@ -27,9 +25,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 
 <br/>
 
-#
 ## 📆 Roadmap
-#
 
 - [X] Connect to Binance Spot API
   - [X] Rest
@@ -50,9 +46,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 
 <br/>
 
-#
 ## 📄 License
-#
 
 Code released under the [MIT License](./LICENSE).
 
