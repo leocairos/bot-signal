@@ -1,0 +1,58 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// @author leocairos
+
+//@version=5
+indicator(title="Relative Strength Index And Money Flow Index", shorttitle="RSI x MFI", format=format.price, precision=2, timeframe="", timeframe_gaps=true)
+
+// RSI
+rsiLengthInput = input.int(14, minval=1, title="RSI Length", group="RSI Settings")
+rsiSourceInput = input.source(close, "Source", group="RSI Settings")
+up = ta.rma(math.max(ta.change(rsiSourceInput), 0), rsiLengthInput)
+down = ta.rma(-math.min(ta.change(rsiSourceInput), 0), rsiLengthInput)
+rsi = down == 0 ? 100 : up == 0 ? 0 : 100 - (100 / (1 + up / down))
+rsiUpperBand = hline(80, "RSI Upper Band", color=#787B86)
+rsiLowerBand = hline(20, "RSI Lower Band", color=#787B86)
+plot(rsi, "RSI", color=#7E57C2)
+
+
+//MFI
+length = input.int(title="Length", defval=14, minval=1, maxval=2000)
+src = hlc3
+mf = ta.mfi(src, length)
+plot(mf, "MF", color=#E1E1E1)
+overbought=hline(80, title="Overbought", color=#787B86)
+hline(50, "Middle Band", color=color.new(#787B86, 50))
+oversold=hline(20, title="Oversold", color=#787B86)
+
+HighlightBreaches=input(true, title="Highlight Oversold/Overbought?", type=bool)
+upper=80, low=20
+b_color = (mf > upper) ? color(#FF0D0D,70) : (mf < lower) ? color(#13D100,60) : na
+bgcolor(HighlightBreaches ? b_color : na)
+
+
+
+// @version 2
+// @author seiglerj
+// MFI indicator based on LazyBear's MFI/RSI indicator
+// 
+study(title = "MFI [seiglerj]", shorttitle="MFI", precision=0)
+source = hlc3
+length = input(14, minval=1), lower = input(20, minval=0, maxval=50, type=integer), upper = input(80, minval=50, maxval=100, type=integer)
+// DrawMFI_f=input(true, title="Draw MFI?", type=bool)
+HighlightBreaches=input(true, title="Highlight Oversold/Overbought?", type=bool)
+
+// MFI
+upper_s = sum(volume * (change(source) <= 0 ? 0 : source), length)
+lower_s = sum(volume * (change(source) >= 0 ? 0 : source), length)
+mf = rsi(upper_s, lower_s)
+mfp = plot(mf, color=color(gray,0), linewidth=1)
+top = hline(upper, color=color(gray,100), linewidth=1, editable=false)
+bottom = hline(lower, color=color(gray,100), linewidth=1, editable=false)
+hline(0, color=color(black,100), editable=false)
+hline(100, color=color(black,100), editable=false)
+
+// Breaches
+b_color = (mf > upper) ? color(#FF0D0D,70) : (mf < lower) ? color(#13D100,60) : na
+bgcolor(HighlightBreaches ? b_color : na)
+
+fill(top, bottom, color=gray, transp=75)

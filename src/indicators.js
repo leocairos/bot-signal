@@ -1,5 +1,19 @@
 const technicalIndicators = require('technicalindicators');
 
+function fibonacciRetracement(close, uptrend=0.10, downtrend=0.10) {
+
+    const fibResultUp = technicalIndicators.fibonacciretracement(
+        close, close * (1 + uptrend)
+        )
+    const fibResultDown = technicalIndicators.fibonacciretracement(
+        close, close * (1 - downtrend)
+        )
+    return {
+        current: fibResultUp,
+        previous: fibResultDown
+    }
+}
+
 function MFI(ohlc, period = 14) {
     period = parseInt(period);
     if (ohlc.high.length <= period) return { current: false, previous: false };
@@ -82,6 +96,7 @@ function EMA(closes, period = 10) {
 }
 
 module.exports = {
+    fibonacciRetracement,
     MFI,
     RSI,
     MACD,
