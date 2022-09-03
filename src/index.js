@@ -4,7 +4,6 @@ const Exchange = require("./exchange");
 const { sendMessageTelegram } = require("./telegram");
 
 const QUOTE = `${process.env.QUOTE}`;
-const isProduction = `${process.env.NODE_ENV}` === 'production'
 
 async function startMonitor(symbol, interval) {
   const exchange = new Exchange();
@@ -43,11 +42,8 @@ async function startMonitor(symbol, interval) {
       msg += `, EMA200: ${ema200.current}`
       msg += `, OHLC: [${txtOHLC}]`
       
-      if (!isProduction) console.log(msg)
-      if (overSold == true || overBought == true) {
-        sendMessageTelegram(msg);
-        if (isProduction) console.log(msg)
-      }
+      console.log(msg)
+      if (overSold == true || overBought == true) sendMessageTelegram(msg);
     }
 
   })
