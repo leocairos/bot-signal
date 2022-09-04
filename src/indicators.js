@@ -1,7 +1,7 @@
 const technicalIndicators = require('technicalindicators');
 
 function fibonacciRetracement(close, uptrend=0.10, downtrend=0.10) {
-
+    // ToDo: Improve this logic
     const fibResultUp = technicalIndicators.fibonacciretracement(
         close, close * (1 + uptrend)
         )

@@ -9,12 +9,18 @@ module.exports = class Exchange {
             urls: {
                 base: "https://api.binance.com/api/",
                 stream: "wss://stream.binance.com:9443/ws/",
+                fapi: "https://fapi.binance.com/fapi/",
+                fstreamSingle: "wss://stream.binancefuture.com/"
             },
         });
     }
 
     exchangeInfo() {
         return this.binance.exchangeInfo();
+    }
+
+    futuresExchangeInfo() {
+        return this.binance.futuresExchangeInfo();
     }
 
     async candles(symbol, interval) {
@@ -43,11 +49,6 @@ module.exports = class Exchange {
 
             const tick = this.binance.last(chart);
             const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;
-
-            if ((!process.env.INCOMPLETE_CANDLES || process.env.INCOMPLETE_CANDLES === 'false')
-                && isIncomplete) {
-                return;
-            }
 
             const ohlc = this.binance.ohlc(chart);
             ohlc.isComplete = !isIncomplete;

@@ -71,7 +71,19 @@ async function startMonitor(symbol, interval) {
       s.isSpotTradingAllowed === true )
   .map(s => s.symbol)
 
-  console.log(`Monitoring all ${spotFilteredSymbols.length} available with quote asset "${QUOTE}".\n`)
+  //console.log(`Monitoring all ${spotFilteredSymbols.length} available with quote asset "${QUOTE}".\n`)
+
+  const futuresSymbols = await exchange.futuresExchangeInfo();
+
+  const futuresFilteredSymbols = futuresSymbols.symbols
+    .filter(s => s.quoteAsset === QUOTE && 
+      s.status === "TRADING" )
+  .map(s => s.symbol)
+
+  console.log(`Monitoring all available symbols with quote asset "${QUOTE}":`)
+  console.log(` - ${spotFilteredSymbols.length} spot symbols.`)
+  console.log(` - ${futuresFilteredSymbols.length} futures symbols.\n`)
+
 
   spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "15m") )
   spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1h") )
