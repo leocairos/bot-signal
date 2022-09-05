@@ -1,10 +1,11 @@
 require('dotenv-safe').config();
 const { RSI, MFI, EMA, fibonacciRetracement } = require("./indicators")
 const Exchange = require("./exchange");
-const { htmlAlertFormatted } = require("./util");
+const { makeChartImage } = require("./util");
 const { sendMessageTelegram, sendImageTelegram } = require("./telegram");
 
 const QUOTE = `${process.env.QUOTE}`;
+const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
 
 async function startMonitor(symbol, interval) {
   const exchange = new Exchange();
@@ -50,42 +51,48 @@ async function startMonitor(symbol, interval) {
       
       console.log(msg)
       if (overSold == true || overBought == true) sendMessageTelegram(msg);
+
+      //const img = await makeChartImage(symbol, interval);
+      //console.log(img)
     }
 
   })
 }
 
-(async () => {
+async function doRun(){
   console.log(`System started at ${new Date().toISOString()}\n`)
 
-  //sendImageTelegram("https://www.tradingview.com/x/2F5BIckO/");
-  // let htmlMsg = htmlAlertFormatted();
-  // sendMessageTelegram(htmlMsg)
-
   const exchange = new Exchange();
-  const spotSymbols = await exchange.exchangeInfo();
 
+  const spotSymbols = await exchange.exchangeInfo();
   const spotFilteredSymbols = spotSymbols.symbols
     .filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" && 
       s.isSpotTradingAllowed === true )
   .map(s => s.symbol)
 
-  //console.log(`Monitoring all ${spotFilteredSymbols.length} available with quote asset "${QUOTE}".\n`)
-
   const futuresSymbols = await exchange.futuresExchangeInfo();
-
   const futuresFilteredSymbols = futuresSymbols.symbols
     .filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" )
   .map(s => s.symbol)
 
-  console.log(`Monitoring all available symbols with quote asset "${QUOTE}":`)
+  console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
   console.log(` - ${spotFilteredSymbols.length} spot symbols.`)
   console.log(` - ${futuresFilteredSymbols.length} futures symbols.\n`)
 
+  INTERVALS.forEach( interval => spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, interval)))
+  
+}
 
-  spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "15m") )
-  spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1h") )
-  //spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1m") )
-})()
+doRun();
+
+async function testImage(){
+  console.log(`System started at ${new Date().toISOString()}\n`)
+
+  const img = await makeChartImage("ETHUSDT", "15m");
+
+  console.log(img)
+}
+
+//testImage()
