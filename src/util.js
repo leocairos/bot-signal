@@ -105,14 +105,15 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   fibonacci.current.map( f => formatNumber(f)).forEach( f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
   fibonacci.previous.map( f => formatNumber(f)).forEach( f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
 
+  const profit =((lastClose/lastOpen) -1) * 100 ;
   let html =`
-  <b>${symbol}_${interval} is <u>${signal.toUpperCase()}</u></b>
+  <b>${symbol}_${interval} is <u>${signal.toUpperCase()}</u></b> (${formatNumber(lastClose-lastOpen)} ${profit.toFixed(2)}%)
 
   <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
   <b>Open: </b> <i>${lastOpen}</i>       <b>High:  </b> <i>${lastHigh}</i>
   <b>Low:   </b> <i>${lastLow}</i>       <b>Close: </b> <i>${lastClose}</i>
   
-  <b>EMA_14: </b> <i>${ema14C}</i> <b>EMA_100: </b> <i>${ema100C}</i>
+  <b>EMA_14: </b> <i>${ema14C}</i>      <b>EMA_100: </b> <i>${ema100C}</i>
   <b>EMA_200: </b> <i>${ema200C}</i>
   
   <b>FIBONACCI Uptrend: </b> <i>${fibCT}</i>
