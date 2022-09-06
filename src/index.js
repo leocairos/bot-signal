@@ -116,6 +116,10 @@ async function doRun(){
   console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
   console.log(` - ${spotFilteredSymbols.length} spot symbols.`)
   console.log(` - ${futuresFilteredSymbols.length} futures symbols.\n`)
+  
+  console.log(`Alerts by RSI x MFI:`)
+  console.log(` * RSI <= ${RSI_LIMITS[0]} and MFI <= ${MFI_LIMITS[0]}`)
+  console.log(` * RSI >= ${RSI_LIMITS[1]} and MFI >= ${MFI_LIMITS[1]}\n`)
 
   INTERVALS.forEach( interval => spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, interval)))
   
