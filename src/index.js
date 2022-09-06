@@ -78,7 +78,7 @@ async function startMonitor(symbol, interval) {
         const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
         console.log(formattedAlert)
         sendMessageTelegram(formattedAlert);
-        sendImageTelegram(symbol, interval)
+        //sendImageTelegram(symbol, interval)
       }
 
     }

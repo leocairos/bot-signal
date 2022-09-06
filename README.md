@@ -41,7 +41,8 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [X] EMA
   - [X] Fibonacci Retracement
 - [X] Send formatted Telegram message
-- [X] Send Chart image on Telegram message
+- [ ] Send Chart image on Telegram message
+  - [ ] To process image is slowly. Need queue
 - [ ] Connect to Binance Futures API
   - [X] Rest
   - [ ] Websocket
