@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const fs = require("fs")
 
 const pageWidth = 860;
 const pageHeight = 460;
@@ -73,23 +74,49 @@ async function makeChartImage(symbol, interval){
 
   await page.setContent(getChartHtmlPage(symbol, interval));
 
-  await new Promise(r => setTimeout(r, 2000));
-  const pathImage = `./tmp/${symbol}_${interval}.png`
+  await new Promise(r => setTimeout(r, 1500));
+  const pathImage = `./tmp/${new Date().getTime()}_${symbol}_${interval}.png`
   await page.screenshot({path: pathImage });
   return pathImage;
 };
 
-function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ema14, ema100, ema200, ohlc){
-  let html =`
-  <b>YGGUSDT_15m is <u>OVERBOUGHT</u></b>
+/*
+* ohlc: [open, high, low, close]
+*/
+function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fibonacci, sma, macd){
+  const lastOpen = ohlc.open[ohlc.close.length -1];
+  const lastHigh = ohlc.high[ohlc.close.length -1];
+  const lastLow = ohlc.low[ohlc.close.length -1];
+  const lastClose = ohlc.close[ohlc.close.length -1];
 
-  <b>RSI: </b><i>82.01</i>           <b>MFI: </b><i>92.70</i>
-  <b>EMA_14: </b> <i>0.50686488</i> <b>EMA_100: </b> <i>0.50686488</i>
-  <b>EMA_200: </b> <i>0.50686488</i>
+  let html =`
+  <b>${symbol}_${interval} is <u>${signal.toUpperCase()}</u></b>
+
+  <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i> <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
+  <b>Open: </b> <i>${lastOpen}</i>   <b>High:  </b> <i>${lastHigh}</i>
+  <b>Low:   </b> <i>${lastLow}</i>   <b>Close: </b> <i>${lastClose}</i>
   
-  <b>Open: </b> <i>0.50686488</i>   <b>High:  </b> <i>0.50686488</i>
-  <b>Low:   </b> <i>0.50686488</i>   <b>Close: </b> <i>0.50686488</i>`
+  <b>EMA_14: </b> <i>${ema14.current}</i> <b>EMA_100: </b> <i>${ema100.current}</i>
+  <b>EMA_200: </b> <i>${ema200.current}</i>
+
+  <b>SMA: </b> <i>${sma.current}</i>
+
+  <b>MACD: </b> <i>${JSON.stringify(macd.current)}</i>
+  
+  <b>FIBONACCI uptrend: </b> <i>${fibonacci.current}</i>
+  <b>FIBONACCI downtrend: </b> <i>${fibonacci.previous}</i>
+  `
+  
   return html;
 }
 
-module.exports = { htmlAlertFormatted, makeChartImage}
+const removeFile = (pathToFile) =>
+fs.unlink(pathToFile, function(err) {
+  if (err) {
+    throw err
+  } else {
+    console.log("Successfully deleted the file.")
+  }
+})
+
+module.exports = { htmlAlertFormatted, makeChartImage, removeFile}

@@ -33,17 +33,17 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [ ] Monitoring All available Symbols by Quote
   - [X] Spot
   - [ ] Futures
-- [ ] Available Indicators
+- [X] Available Indicators
   - [X] RSI
   - [X] MFI
-  - [ ] MACD
-  - [ ] SMA
+  - [X] MACD
+  - [X] SMA
   - [X] EMA
-  - [ ] Fibonacci Retracement
-- [ ] Send formatted Telegram message
-- [X] Check invert conditions to reduce redundant alerts
+  - [X] Fibonacci Retracement
+- [X] Send formatted Telegram message
+- [X] Send Chart image on Telegram message
 - [ ] Connect to Binance Futures API
-  - [ ] Rest
+  - [X] Rest
   - [ ] Websocket
 
 <br/>

@@ -46,12 +46,10 @@ module.exports = class Exchange {
 
     chartStream(symbol, interval, callback) {
         const streamUrl = this.binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
-
             const tick = this.binance.last(chart);
             const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;
-
+            if (isIncomplete) return;
             const ohlc = this.binance.ohlc(chart);
-            ohlc.isComplete = !isIncomplete;
             callback(ohlc);
         });
         console.log(`Chart Stream connected at ${streamUrl}`);
