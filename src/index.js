@@ -1,7 +1,7 @@
 require('dotenv-safe').config();
 const { RSI, MFI, EMA, fibonacciRetracement, SMA, MACD } = require("./indicators")
 const Exchange = require("./exchange");
-const { makeChartImage, htmlAlertFormatted } = require("./util");
+const { makeChartImage, htmlAlertFormatted, formatNumber } = require("./util");
 const { sendMessageTelegram, sendImageTelegram } = require("./telegram");
 
 const QUOTE = `${process.env.QUOTE}`;
@@ -19,10 +19,10 @@ function doCalc(ohlc) {
   const sma = SMA(ohlc.close)
   const macd = MACD(ohlc.close)
   const fib = fibonacciRetracement(ohlc.close[ohlc.close.length -1])
-  const lastOpen = ohlc.open[ohlc.close.length -1];
-  const lastHigh = ohlc.high[ohlc.close.length -1];
-  const lastLow = ohlc.low[ohlc.close.length -1];
-  const lastClose = ohlc.close[ohlc.close.length -1];
+  const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
+  const lastHigh = formatNumber(ohlc.high[ohlc.close.length -1]);
+  const lastLow = formatNumber(ohlc.low[ohlc.close.length -1]);
+  const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
   const txtOHLC = `${lastOpen}, ${lastHigh}, ${lastLow}, ${lastClose}`
   const isNumberIndicator = typeof rsi.current === "number" && typeof mfi.current === "number";
   const isUpperZero = (rsi.current > 0  && mfi.current > 0)
@@ -62,14 +62,23 @@ async function startMonitor(symbol, interval) {
       }
       msg += `, OHLC: [${txtOHLC}]`
 
-      msg += `, EMA14: ${ema14.current}`
-      msg += `, EMA100: ${ema100.current}`
-      msg += `, EMA200: ${ema200.current}`
-      msg += `, SMA: ${sma.current}`
-      msg += `, MACD: ${JSON.stringify(macd.current)}`
+      msg += `, EMA14: ${formatNumber(ema14.current)}`
+      msg += `, EMA100: ${formatNumber(ema100.current)}`
+      msg += `, EMA200: ${formatNumber(ema200.current)}`
+      msg += `, SMA: ${formatNumber(sma.current)}`
 
-      msg += `, FibUp: ${fib.current}`
-      msg += `, FibDown: ${fib.previous}`
+      let macdC = { "MACD": formatNumber(macd.current.MACD), 
+                    "signal": formatNumber(macd.current.signal),
+                    "histogram": formatNumber(macd.current.histogram)}
+      msg += `, MACD: ${JSON.stringify(macdC)}`
+
+      let fibCT = '';
+      let fibPT = '';
+      fib.current.map( f => formatNumber(f)).forEach( f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
+      fib.previous.map( f => formatNumber(f)).forEach( f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
+
+      msg += `, FibUp: ${fibCT}`
+      msg += `, FibDown: ${fibPT}`
       
       console.log(msg)
       

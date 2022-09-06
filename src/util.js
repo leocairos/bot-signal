@@ -80,33 +80,46 @@ async function makeChartImage(symbol, interval){
   return pathImage;
 };
 
-/*
-* ohlc: [open, high, low, close]
-*/
+function formatNumber(value){
+  return value > 1 
+    ? parseFloat(value.toFixed(3)) : 
+    value > 0.1 
+      ? parseFloat(value.toFixed(5))
+      : value > 0.001 
+        ? parseFloat(value.toFixed(6))
+        : parseFloat(value.toFixed(8));
+}
+
 function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fibonacci, sma, macd){
-  const lastOpen = ohlc.open[ohlc.close.length -1];
-  const lastHigh = ohlc.high[ohlc.close.length -1];
-  const lastLow = ohlc.low[ohlc.close.length -1];
-  const lastClose = ohlc.close[ohlc.close.length -1];
+  const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
+  const lastHigh = formatNumber(ohlc.high[ohlc.close.length -1]);
+  const lastLow = formatNumber(ohlc.low[ohlc.close.length -1]);
+  const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
+
+  const ema14C = formatNumber(ema14.current);
+  const ema100C = formatNumber(ema100.current);
+  const ema200C = formatNumber(ema200.current);
+
+  let fibCT = '';
+  let fibPT = '';
+  fibonacci.current.map( f => formatNumber(f)).forEach( f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
+  fibonacci.previous.map( f => formatNumber(f)).forEach( f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
 
   let html =`
   <b>${symbol}_${interval} is <u>${signal.toUpperCase()}</u></b>
 
-  <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i> <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
-  <b>Open: </b> <i>${lastOpen}</i>   <b>High:  </b> <i>${lastHigh}</i>
-  <b>Low:   </b> <i>${lastLow}</i>   <b>Close: </b> <i>${lastClose}</i>
+  <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
+  <b>Open: </b> <i>${lastOpen}</i>       <b>High:  </b> <i>${lastHigh}</i>
+  <b>Low:   </b> <i>${lastLow}</i>       <b>Close: </b> <i>${lastClose}</i>
   
-  <b>EMA_14: </b> <i>${ema14.current}</i> <b>EMA_100: </b> <i>${ema100.current}</i>
-  <b>EMA_200: </b> <i>${ema200.current}</i>
-
-  <b>SMA: </b> <i>${sma.current}</i>
-
-  <b>MACD: </b> <i>${JSON.stringify(macd.current)}</i>
+  <b>EMA_14: </b> <i>${ema14C}</i> <b>EMA_100: </b> <i>${ema100C}</i>
+  <b>EMA_200: </b> <i>${ema200C}</i>
   
-  <b>FIBONACCI uptrend: </b> <i>${fibonacci.current}</i>
-  <b>FIBONACCI downtrend: </b> <i>${fibonacci.previous}</i>
+  <b>FIBONACCI Uptrend: </b> <i>${fibCT}</i>
+  <b>FIBONACCI Downtrend: </b> <i>${fibPT}</i>
   `
-  
+  //  <b>SMA: </b> <i>${sma.current}</i>
+  //  <b>MACD: </b> <i>${JSON.stringify(macd.current)}</i>
   return html;
 }
 
@@ -119,4 +132,4 @@ fs.unlink(pathToFile, function(err) {
   }
 })
 
-module.exports = { htmlAlertFormatted, makeChartImage, removeFile}
+module.exports = { htmlAlertFormatted, makeChartImage, removeFile, formatNumber}
