@@ -105,7 +105,7 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   fibonacci.current.map( f => formatNumber(f)).forEach( f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
   fibonacci.previous.map( f => formatNumber(f)).forEach( f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
 
-  const url = `https://www.tradingview.com/chart/?symbol=BINANCE%3${symbol}`; 
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
   const symbol_link = `<a href="${url}">${symbol}</a>`
   const profit =((lastClose/lastOpen) -1) * 100 ;
   let html =`
