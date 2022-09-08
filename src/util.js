@@ -135,10 +135,12 @@ function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14){
   const ema14C = formatNumber(ema14.current);
 
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
-  const symbol_link = `<a href="${url}">${symbol}</a>`
+  const url2 = `https://www.tradingview.com/symbols/${symbol}/`; 
+  const symbol_link = `<a href="${url2}">${symbol}</a>`
+  const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit =((lastClose/lastOpen) -1) * 100 ;
   let html =
-  `<b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> ${lastClose}${QUOTE} (${formatNumber(lastClose-lastOpen)}${QUOTE} ${profit.toFixed(2)}%)
+  `<b>${symbol_link}_${interval} is <u>${signal_link}</u></b> ${lastClose}${QUOTE} (${formatNumber(lastClose-lastOpen)}${QUOTE} ${profit.toFixed(2)}%)
     <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
     <b>Close: </b> <i>${lastClose}</i>   <b>EMA_14: </b> <i>${ema14C}</i>
   `
