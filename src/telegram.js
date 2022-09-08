@@ -8,7 +8,7 @@ const CHAT_ID = process.env.CHAT_ID;
 const bot = new Telegraf(BOT_TOKEN, { polling: true });
 
 function sendMessageTelegram(message) {
-  bot.telegram.sendMessage(CHAT_ID, message, { parse_mode: 'html' });
+  bot.telegram.sendMessage(CHAT_ID, message, { parse_mode: 'html', disable_web_page_preview: true});
 }
 
 async function sendImageTelegram(symbol, interval) {
