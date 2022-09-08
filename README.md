@@ -30,9 +30,9 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Connect to Binance Spot API
   - [X] Rest
   - [X] Websocket
-- [ ] Monitoring All available Symbols by Quote
+- [X] Monitoring All available Symbols by Quote (Exchange Info)
   - [X] Spot
-  - [ ] Futures
+  - [X] Futures
 - [X] Available Indicators
   - [X] RSI
   - [X] MFI
@@ -43,9 +43,12 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Send formatted Telegram message
 - [ ] Send Chart image on Telegram message
   - [ ] To process image is slowly. Need queue
-- [ ] Connect to Binance Futures API
+- [X] Connect to Binance Futures API
   - [X] Rest
-  - [ ] Websocket
+  - [!] Websocket (using same charts of Spot, because values are very near)
+- [ ] Summary Alerts by Strategy
+  - [ ] Summary (One message with all alerts by strategy on last time interval)
+  - [ ] Top 5 coins on 3 last time interval
 
 <br/>
 

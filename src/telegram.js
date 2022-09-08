@@ -1,4 +1,4 @@
-require('dotenv-safe').config();
+
 const { Telegraf } = require('telegraf')
 const { removeFile, makeChartImage } = require('./util')
 

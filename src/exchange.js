@@ -50,6 +50,18 @@ module.exports = class Exchange {
             const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;
             if (isIncomplete) return;
             const ohlc = this.binance.ohlc(chart);
+            ohlc.lastTimeStamp = parseFloat(tick);
+            callback(ohlc);
+        });
+        console.log(`Chart Stream connected at ${streamUrl}`);
+    }
+
+    async futuresChartStream(symbol, interval, callback) {
+        const streamUrl = await this.binance.futuresChart(symbol, interval, (symbol, interval, chart) => {
+            const tick = this.binance.last(chart);
+            const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;
+            if (isIncomplete) return;
+            const ohlc = this.binance.ohlc(chart);
             callback(ohlc);
         });
         console.log(`Chart Stream connected at ${streamUrl}`);

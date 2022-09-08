@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const fs = require("fs")
 
+const QUOTE = `${process.env.QUOTE}`;
 const pageWidth = 860;
 const pageHeight = 460;
 
@@ -81,6 +82,8 @@ async function makeChartImage(symbol, interval){
 };
 
 function formatNumber(value){
+  if (typeof value !== "number") return value;
+  
   return value > 1 
     ? parseFloat(value.toFixed(3)) : 
     value > 0.1 
@@ -108,8 +111,8 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
   const symbol_link = `<a href="${url}">${symbol}</a>`
   const profit =((lastClose/lastOpen) -1) * 100 ;
-  let html =`
-  <b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> (${formatNumber(lastClose-lastOpen)} ${profit.toFixed(2)}%)
+  let html =
+  `<b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> (${formatNumber(lastClose-lastOpen)} ${profit.toFixed(2)}%)
 
   <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
   <b>Open: </b> <i>${lastOpen}</i>       <b>High:  </b> <i>${lastHigh}</i>
@@ -126,6 +129,22 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
+function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14){
+  const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
+  const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
+  const ema14C = formatNumber(ema14.current);
+
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
+  const symbol_link = `<a href="${url}">${symbol}</a>`
+  const profit =((lastClose/lastOpen) -1) * 100 ;
+  let html =
+  `<b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> ${lastClose}${QUOTE} (${formatNumber(lastClose-lastOpen)}${QUOTE} ${profit.toFixed(2)}%)
+    <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
+    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_14: </b> <i>${ema14C}</i>
+  `
+  return html;
+}
+
 const removeFile = (pathToFile) =>
 fs.unlink(pathToFile, function(err) {
   if (err) {
@@ -135,4 +154,4 @@ fs.unlink(pathToFile, function(err) {
   }
 })
 
-module.exports = { htmlAlertFormatted, makeChartImage, removeFile, formatNumber}
+module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber}
