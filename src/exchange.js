@@ -1,5 +1,7 @@
 const Binance = require('node-binance-api');
 
+const isProductionEnv = process.env.NODE_ENV === 'production';
+
 module.exports = class Exchange {
 
     constructor() {
@@ -7,10 +9,11 @@ module.exports = class Exchange {
             recvWindow: 60000, // 60000 Set a higher recvWindow to increase response timeout
             useServerTime: true,
             //family: 0,
-            //verbose: true, // Add extra output when subscribing to WebSockets, etc
-            // log: log => {
-            //     console.log('BINANCE-API-LOG', log); // You can create your own logger here, or disable console output
-            // },
+            verbose: false, // Add extra output when subscribing to WebSockets, etc
+            log: log => {
+                if (!isProductionEnv) console.log('BINANCE-API-LOG', log)
+                //console.log('BINANCE-API-LOG', log); // You can create your own logger here, or disable console output
+            },
             urls: {
                 base: "https://api.binance.com/api/",
                 stream: "wss://stream.binance.com:9443/ws/",

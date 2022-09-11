@@ -1,6 +1,8 @@
 const { htmlAlertSummary } = require("./util");
 const { sendMessageTelegram } = require("./telegram");
 
+const isProductionEnv = process.env.NODE_ENV === 'production';
+
 function getDifference(array1, array2) {
   return array1.filter(object1 => {
     return !array2.some(object2 => {
@@ -53,6 +55,7 @@ module.exports = class AlertSignal {
   sendAlerts() {
     let telegramMessage = ''
     const alerts = [...this.ALERTS];
+    console.log(alerts.length, 'alerts to send..')
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
@@ -76,7 +79,8 @@ module.exports = class AlertSignal {
     this.ALERTS = getDifference(this.ALERTS, alerts)
 
     if (telegramMessage !== '') {
-      //console.log(telegramMessage)
+      if (!isProductionEnv) console.log(telegramMessage)
+      console.log(alerts.length, 'alerts sent successfully!!!')
       sendMessageTelegram(telegramMessage);
     }
   }

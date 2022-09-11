@@ -3,6 +3,7 @@ const Exchange = require("./exchange");
 const { htmlAlertFormatted, formatNumber, htmlAlertSummary } = require("./util");
 const { sendMessageTelegram } = require("./telegram");
 
+const isProductionEnv = process.env.NODE_ENV === 'production';
 const RSI_LIMITS = process.env.RSI_LIMITS ? process.env.RSI_LIMITS.split(',') : [30, 70];
 const MFI_LIMITS = process.env.MFI_LIMITS ? process.env.MFI_LIMITS.split(',') : [20, 80];
 const USE_INVERSE_CONDITIONS = !process.env.USE_INVERSE_CONDITIONS || process.env.USE_INVERSE_CONDITIONS === 'true'
@@ -53,7 +54,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
     }
     msg += `, OHLC: [${txtOHLC}]`
 
-    console.log(msg)
+    if (!isProductionEnv) console.log(msg)
 
     msg += `, EMA14: ${formatNumber(ema14.current)}`
     msg += `, EMA100: ${formatNumber(ema100.current)}`

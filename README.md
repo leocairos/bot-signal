@@ -46,6 +46,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Connect to Binance Futures API
   - [X] Rest
   - [!] Websocket (using same charts of Spot, because values are very near)
+- [X] Suppress logs in production environment
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
   - [ ] Summary Alerts by Strategy
