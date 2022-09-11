@@ -1,7 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require("fs")
 
-const QUOTE = `${process.env.QUOTE}`;
 const pageWidth = 860;
 const pageHeight = 460;
 
@@ -129,11 +128,12 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14){
+function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100){
   const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
   const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
+  const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length -1]);
   const ema14C = formatNumber(ema14.current);
-
+  const ema100C = formatNumber(ema100.current);
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
   const url2 = `https://www.tradingview.com/symbols/${symbol}/`; 
   const symbol_link = `<a href="${url2}">${symbol}</a>`

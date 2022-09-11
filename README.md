@@ -46,9 +46,11 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Connect to Binance Futures API
   - [X] Rest
   - [!] Websocket (using same charts of Spot, because values are very near)
-- [ ] Summary Alerts by Strategy
-  - [ ] Summary (One message with all alerts by strategy on last time interval)
-  - [ ] Top 5 coins on 3 last time interval
+- [ ] Summary Alerts
+  - [X] One message every X time (.env SEND_ALERT_INTERVAL)
+  - [ ] Summary Alerts by Strategy
+    - [ ] Summary (One message with all alerts by strategy on last time interval)
+    - [ ] Top 5 coins on 3 last time interval
 
 <br/>
 

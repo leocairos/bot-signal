@@ -1,56 +1,74 @@
 require('dotenv-safe').config();
+const AlertSignal = require('./AlertSignal');
 const Exchange = require("./exchange");
-const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts } = require("./monitor");
+const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts, startMonitorTicker} = require("./monitor");
 const { sendMessageTelegram } = require("./telegram");
 
+const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
 const QUOTE = `${process.env.QUOTE}`;
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
+const alertSignals = new AlertSignal();
 
-async function doRun(){
-  console.log(`System started at ${new Date().toISOString()}\n`)
-
-  const exchange = new Exchange();
-
+async function getSpotSymbols(exchange){
   const spotSymbols = await exchange.exchangeInfo();
-  const spotFilteredSymbols = spotSymbols.symbols
+  const spotFilteredSymbols = [...spotSymbols.symbols]
     .filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" && 
       s.isSpotTradingAllowed === true )
-    .map(s => s.symbol)
+    .map(s => s.symbol);
+  return spotFilteredSymbols;
+}
 
+async function getFutureSymbols(exchange){
   const futuresSymbols = await exchange.futuresExchangeInfo();
   const futuresFilteredSymbols = futuresSymbols.symbols
     .filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" )
     .map(s => s.symbol)
-
-  console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
-  console.log(` - ${spotFilteredSymbols.length} spot symbols.`)
-  console.log(` - ${futuresFilteredSymbols.length} futures symbols.\n`)
-  
-  console.log(`Alerts by RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
-  
-  INTERVALS.forEach( interval => spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, interval)))
-  //spotFilteredSymbols.forEach( symbol=> startMonitor(symbol, "1m"))
-  
-  // const onlyFutures = futuresFilteredSymbols.filter(x => !spotFilteredSymbols.includes(x));
-  // INTERVALS.forEach( interval => onlyFutures.forEach( symbol=> startFuturesMonitor(symbol, interval)))
+  return futuresFilteredSymbols;
 }
 
-doRun();
+async function doRun(isFuture = false){
+  console.log(`System started at ${new Date().toISOString()}\n`)
 
+  const exchange = new Exchange();
 
-// setInterval(()=>{
-//   const alerts = getAlerts();
-//   console.log(alerts, '\n\n')
-//   let msgTelegram = ''
-//   const sOverBought = alerts.filter(a => a.signal === 'overBought')
-//   const sOverSold = alerts.filter(a => a.signal === 'overSold')
-//   sOverBought.forEach(a => msgTelegram += a.formattedAlert)
-//   sOverSold.forEach(a => msgTelegram += a.formattedAlert)
+  const spotSymbols = await getSpotSymbols(exchange);
+  const futuresSymbols = await getFutureSymbols(exchange);
 
-//   if (msgTelegram !== ''){
-//     sendMessageTelegram(msgTelegram);
-//     cleanAlerts();
-//   }
-// }, 10000)
+  alertSignals.updateSymbols(spotSymbols, futuresSymbols);
+  const bothSymbols = futuresSymbols.filter(x => spotSymbols.includes(x));
+  const onlyFutures = futuresSymbols.filter(x => !spotSymbols.includes(x));
+
+  console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
+  if (!isFuture)
+    console.log(` - ${spotSymbols.length} spot symbols.\n`)
+  else
+    console.log(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
+  
+  console.log(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
+  console.log(`  - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
+  
+  startMonitorTicker(exchange);
+  INTERVALS.forEach( interval => {
+    if (!isFuture)
+      spotSymbols.forEach( symbol=> startMonitor(exchange, alertSignals, symbol, interval))
+    else
+      onlyFutures.forEach( symbol=> startMonitor(exchange, alertSignals, symbol, interval, true))
+  })
+    
+}
+
+setInterval(()=>{
+  //console.log(alertSignals.getAlerts())
+  alertSignals.sendAlerts();
+}, SEND_ALERT_INTERVAL * 1000)
+//doRun();
+
+switch (process.argv[2]?.toUpperCase()) {
+  case 'EX-FUTURES':
+    doRun(true);
+    break;
+  default:
+    doRun();
+}
