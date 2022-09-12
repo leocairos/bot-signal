@@ -16,6 +16,7 @@ module.exports = class AlertSignal {
 
   constructor() {
     this.ALERTS = []
+    this.LAST_ALERTS = []
     this.SPOT_SYMBOLS = []
     this.FUTURES_SYMBOLS = []
   }
@@ -37,14 +38,17 @@ module.exports = class AlertSignal {
 
   insert({ symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100 }) {
     // const key = `${ohlc.lastTimeStamp}_${symbol}_${interval}`;
-    // const alert = { symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100 };
+    const alert = { symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100 };
     // this.ALERTS[`${key}`] = alert;
     // console.log(this.ALERTS);
     const currentAlerts = [...(this.ALERTS)]
     const exists = currentAlerts
       .find(a => a.ohlc.lastTimeStamp === ohlc.lastTimeStamp &&
         a.symbol === symbol && a.interval === interval);
-    if (!exists)
+    const lastAlerts = [...(this.LAST_ALERTS)]
+    const alreadySend = lastAlerts
+        .find(a => JSON.stringify(a) === JSON.stringify(alert))
+    if (!exists && !alreadySend)
       this.ALERTS.push({ symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100 });
   }
 
@@ -59,6 +63,8 @@ module.exports = class AlertSignal {
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
+    const sendedAlerts = [...alerts];
+    
     if (alertsBuy.length > 0) {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
@@ -83,5 +89,7 @@ module.exports = class AlertSignal {
       console.log(alerts.length, 'alerts sent successfully!!!')
       sendMessageTelegram(telegramMessage);
     }
+
+    sendedAlerts.forEach(a => this.LAST_ALERTS.push(a))
   }
 }
