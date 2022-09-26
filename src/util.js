@@ -4,7 +4,7 @@ const fs = require("fs")
 const pageWidth = 860;
 const pageHeight = 460;
 
-function intervalHTMLConvert(interval){
+function intervalHTMLConvert(interval) {
   switch (interval) {
     case '1m': return "1";
     case '3m': return "3";
@@ -17,7 +17,7 @@ function intervalHTMLConvert(interval){
   }
 }
 
-function getChartHtmlPage(symbol, interval){
+function getChartHtmlPage(symbol, interval) {
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -63,40 +63,49 @@ function getChartHtmlPage(symbol, interval){
   `
 }
 
-async function makeChartImage(symbol, interval){
+async function makeChartImage(symbol, interval) {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.setViewport({
-      width: pageWidth,
-      height: pageHeight,
-      deviceScaleFactor: 1
+    width: pageWidth,
+    height: pageHeight,
+    deviceScaleFactor: 1
   });
 
   await page.setContent(getChartHtmlPage(symbol, interval));
 
   await new Promise(r => setTimeout(r, 1500));
   const pathImage = `./tmp/${new Date().getTime()}_${symbol}_${interval}.png`
-  await page.screenshot({path: pathImage });
+  await page.screenshot({ path: pathImage });
   return pathImage;
 };
 
-function formatNumber(value){
+function compactNumber(value) {
   if (typeof value !== "number") return value;
-  
-  return value > 1 
-    ? parseFloat(value.toFixed(3)) : 
-    value > 0.1 
+
+  return Intl.NumberFormat('en-US', {
+    notation: "compact",
+    maximumFractionDigits: 2
+  }).format(value);
+}
+
+function formatNumber(value) {
+  if (typeof value !== "number") return value;
+
+  return value > 1
+    ? parseFloat(value.toFixed(3)) :
+    value > 0.1
       ? parseFloat(value.toFixed(5))
-      : value > 0.001 
+      : value > 0.001
         ? parseFloat(value.toFixed(6))
         : parseFloat(value.toFixed(8));
 }
 
-function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fibonacci, sma, macd){
-  const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
-  const lastHigh = formatNumber(ohlc.high[ohlc.close.length -1]);
-  const lastLow = formatNumber(ohlc.low[ohlc.close.length -1]);
-  const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
+function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fibonacci, sma, macd) {
+  const lastOpen = formatNumber(ohlc.open[ohlc.close.length - 1]);
+  const lastHigh = formatNumber(ohlc.high[ohlc.close.length - 1]);
+  const lastLow = formatNumber(ohlc.low[ohlc.close.length - 1]);
+  const lastClose = formatNumber(ohlc.close[ohlc.close.length - 1]);
 
   const ema14C = formatNumber(ema14.current);
   const ema100C = formatNumber(ema100.current);
@@ -104,14 +113,14 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
 
   let fibCT = '';
   let fibPT = '';
-  fibonacci.current.map( f => formatNumber(f)).forEach( f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
-  fibonacci.previous.map( f => formatNumber(f)).forEach( f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
+  fibonacci.current.map(f => formatNumber(f)).forEach(f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
+  fibonacci.previous.map(f => formatNumber(f)).forEach(f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
 
-  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`;
   const symbol_link = `<a href="${url}">${symbol}</a>`
-  const profit =((lastClose/lastOpen) -1) * 100 ;
+  const profit = ((lastClose / lastOpen) - 1) * 100;
   let html =
-  `<b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> (${formatNumber(lastClose-lastOpen)} ${profit.toFixed(2)}%)
+    `<b>${symbol_link}_${interval} is <u>${signal.toUpperCase()}</u></b> (${formatNumber(lastClose - lastOpen)} ${profit.toFixed(2)}%)
 
   <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
   <b>Open: </b> <i>${lastOpen}</i>       <b>High:  </b> <i>${lastHigh}</i>
@@ -128,40 +137,40 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100){
-  const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
-  const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
-  const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length -1]);
+function htmlAlertSummary(symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
+  const lastOpen = formatNumber(ohlc.open[ohlc.close.length - 1]);
+  const lastClose = formatNumber(ohlc.close[ohlc.close.length - 1]);
+  const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
   const ema9C = formatNumber(ema9.current);
   const ema100C = formatNumber(ema100.current);
-  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
-  const url2 = `https://www.tradingview.com/symbols/${symbol}/`; 
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`;
+  const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
-  const profit =((lastClose/lastOpen) -1) * 100 ;
-  const ema9P = ((ema9.current/lastClose) -1) * 100;
+  const profit = ((lastClose / lastOpen) - 1) * 100;
+  const ema9P = ((ema9.current / lastClose) - 1) * 100;
 
   const percentChange = parseFloat(ticker?.percentChange) || 0;
-  const quoteVolume = formatNumber(parseFloat(ticker?.quoteVolume)) || 0;
+  const quoteVolume = compactNumber(parseFloat(ticker?.quoteVolume)) || 0;
 
   //console.log(ticker)
-  
+
   let html =
-  `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
+    `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
     <b>Quote Vol 24h: </b><i>${quoteVolume}</i>  <b>Price Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
-    <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
-    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
+    <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>  <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
+    <b>Close: </b> <i>${lastClose}</i> <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
   `
   return html;
 }
 
 const removeFile = (pathToFile) =>
-fs.unlink(pathToFile, function(err) {
-  if (err) {
-    throw err
-  } else {
-    console.log("Successfully deleted the file.")
-  }
-})
+  fs.unlink(pathToFile, function (err) {
+    if (err) {
+      throw err
+    } else {
+      console.log("Successfully deleted the file.")
+    }
+  })
 
-module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber}
+module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber }
