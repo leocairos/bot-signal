@@ -139,10 +139,11 @@ function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit =((lastClose/lastOpen) -1) * 100 ;
+  const ema9P =((ema9.current/lastClose) -1) * 100 ;
   let html =
   `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
     <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
-    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_9: </b> <i>${ema9C}</i>
+    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
   `
   return html;
 }
