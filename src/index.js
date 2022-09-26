@@ -21,6 +21,7 @@ async function getSpotSymbols(exchange){
 
 async function getFutureSymbols(exchange){
   const futuresSymbols = await exchange.futuresExchangeInfo();
+  console.log(JSON.stringify(futuresSymbols))
   const futuresFilteredSymbols = futuresSymbols.symbols
     ?.filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" )

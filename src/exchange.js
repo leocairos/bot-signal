@@ -23,12 +23,12 @@ module.exports = class Exchange {
         });
     }
 
-    exchangeInfo() {
-        return this.binance.exchangeInfo();
+    async exchangeInfo() {
+        return await this.binance.exchangeInfo();
     }
 
-    futuresExchangeInfo() {
-        return this.binance.futuresExchangeInfo();
+    async futuresExchangeInfo() {
+        return await this.binance.futuresExchangeInfo();
     }
 
     tickerStream(callback) {

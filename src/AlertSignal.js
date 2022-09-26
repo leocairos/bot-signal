@@ -66,7 +66,7 @@ module.exports = class AlertSignal {
     const sendedAlerts = [...alerts];
     
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
-    telegramMessage += 'Strategy: Scalp Agiota by H7\n'
+    telegramMessage += 'STRATEGY: Scalp Agiota by H7\n\n'
     }
     
     if (alertsBuy.length > 0) {
