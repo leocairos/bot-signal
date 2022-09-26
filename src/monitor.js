@@ -82,7 +82,8 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     if (overSold == true || overBought == true) {
       const signal = overSold ? 'overSold' : 'overBought';
-      alertSignals.insert({symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100});
+      const ticker = ticker24h[symbol];
+      alertSignals.insert({symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100});
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);
       // console.log(formattedAlert)
@@ -141,7 +142,7 @@ function updateTicker24h(mkt) {
 function startMonitorTicker(exchange) {
   exchange.tickerStream((markets) => {
     markets.map(mkt => updateTicker24h(mkt));
-    //console.log(ticker24h);
+    //console.log('ticker24h', ticker24h);
   })
 }
 

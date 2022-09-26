@@ -36,7 +36,7 @@ module.exports = class AlertSignal {
     return `(${marketType})`
   }
 
-  insert({ symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100 }) {
+  insert({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 }) {
     // const key = `${ohlc.lastTimeStamp}_${symbol}_${interval}`;
     const alert = { symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100 };
     // this.ALERTS[`${key}`] = alert;
@@ -49,7 +49,7 @@ module.exports = class AlertSignal {
     const alreadySend = lastAlerts
         .find(a => JSON.stringify(a) === JSON.stringify(alert))
     if (!exists && !alreadySend)
-      this.ALERTS.push({ symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
+      this.ALERTS.push({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
   }
 
   getAlerts() {
@@ -72,7 +72,7 @@ module.exports = class AlertSignal {
     if (alertsBuy.length > 0) {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
-        const formattedAlert = htmlAlertSummary(a.symbol, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
+        const formattedAlert = htmlAlertSummary(a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         const mt = this.getMarketType(a.symbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
@@ -80,7 +80,7 @@ module.exports = class AlertSignal {
     if (alertsSell.length > 0) {
       telegramMessage += 'SELL SIGNALS\n'
       alertsSell.forEach(a => {
-        const formattedAlert = htmlAlertSummary(a.symbol, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
+        const formattedAlert = htmlAlertSummary(a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         const mt = this.getMarketType(a.symbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
