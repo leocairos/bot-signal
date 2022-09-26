@@ -22,10 +22,10 @@ async function getSpotSymbols(exchange){
 async function getFutureSymbols(exchange){
   const futuresSymbols = await exchange.futuresExchangeInfo();
   const futuresFilteredSymbols = futuresSymbols.symbols
-    .filter(s => s.quoteAsset === QUOTE && 
+    ?.filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" )
     .map(s => s.symbol)
-  return futuresFilteredSymbols;
+  return futuresFilteredSymbols || [''];
 }
 
 async function doRun(isFuture = false){
