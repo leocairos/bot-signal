@@ -21,7 +21,7 @@ async function getSpotSymbols(exchange){
 
 async function getFutureSymbols(exchange){
   const futuresSymbols = await exchange.futuresExchangeInfo();
-  //console.log(JSON.stringify(futuresSymbols))
+  if (!futuresSymbols.symbols) console.log(JSON.stringify(futuresSymbols))
   const futuresFilteredSymbols = futuresSymbols.symbols
     ?.filter(s => s.quoteAsset === QUOTE && 
       s.status === "TRADING" )
@@ -43,7 +43,7 @@ async function doRun(isFuture = false){
 
   console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
   if (!isFuture)
-    console.log(` - ${spotSymbols.length} spot symbols.\n`)
+    console.log(` - ${spotSymbols.length} spot symbols.\n - ${bothSymbols.length} futures symbols.\n`)
   else
     console.log(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
   

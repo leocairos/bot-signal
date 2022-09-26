@@ -139,16 +139,16 @@ function htmlAlertSummary(symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit =((lastClose/lastOpen) -1) * 100 ;
-  const ema9P =((ema9.current/lastClose) -1) * 100 ;
+  const ema9P = ((ema9.current/lastClose) -1) * 100;
 
   const percentChange = parseFloat(ticker?.percentChange) || 0;
-  const quoteVolume = formatNumber(ticker?.quoteVolume) || 0;
+  const quoteVolume = formatNumber(parseFloat(ticker?.quoteVolume)) || 0;
 
   //console.log(ticker)
   
   let html =
   `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
-    <b>Quote Vol 24h: </b><i>${quoteVolume}</i>  <b>Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
+    <b>Quote Vol 24h: </b><i>${quoteVolume}</i>  <b>Price Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
     <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
     <b>Close: </b> <i>${lastClose}</i>   <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
   `
