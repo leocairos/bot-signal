@@ -1,10 +1,10 @@
 {
     "apps": [
         {
-            "name": "bot-signal-spot",
+            "name": "bot-signal-sf",
             "script": "npm",
             "args": "start",
-            "cron_restart": "0 * * * *",
+            "cron_restart": "0 0 * * *",
             "max_memory_restart": "1024M",
             "time": true,
             "log_date_format": "YYYY-MM-DD HH:mm Z",
@@ -18,10 +18,10 @@
             }
         },
         {
-            "name": "bot-signal-ex-futures",
+            "name": "bot-signal-only-futures",
             "script": "npm",
-            "args": ["start","ex-futures"],
-            "cron_restart": "0 * * * *",
+            "args": ["start","only-futures"],
+            "cron_restart": "0 0 * * *",
             "max_memory_restart": "1024M",
             "time": true,
             "log_date_format": "YYYY-MM-DD HH:mm Z",

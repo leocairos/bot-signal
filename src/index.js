@@ -66,7 +66,7 @@ setInterval(()=>{
 //doRun();
 
 switch (process.argv[2]?.toUpperCase()) {
-  case 'EX-FUTURES':
+  case 'ONLY-FUTURES':
     doRun(true);
     break;
   default:

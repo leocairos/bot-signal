@@ -128,11 +128,11 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100){
+function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100){
   const lastOpen = formatNumber(ohlc.open[ohlc.close.length -1]);
   const lastClose = formatNumber(ohlc.close[ohlc.close.length -1]);
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length -1]);
-  const ema14C = formatNumber(ema14.current);
+  const ema9C = formatNumber(ema9.current);
   const ema100C = formatNumber(ema100.current);
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`; 
   const url2 = `https://www.tradingview.com/symbols/${symbol}/`; 
@@ -142,7 +142,7 @@ function htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema10
   let html =
   `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
     <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>    <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
-    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_14: </b> <i>${ema14C}</i>
+    <b>Close: </b> <i>${lastClose}</i>   <b>EMA_9: </b> <i>${ema9C}</i>
   `
   return html;
 }

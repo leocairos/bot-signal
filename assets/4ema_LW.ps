@@ -1,0 +1,52 @@
+// Pivot Boss is based on the work of Frank Ochoa @ www.pivotboss.com
+// Converted to Pinescript from Easy Language by DavidR.
+
+
+// Summary:
+// Creates one indicator with three exponential moving averages based off the central pivot point
+// which assists you in trading pure price action using floor pivots.
+// This also helps you to avoid getting chopped up during price confluence.
+
+// Parameters:
+// ShortEMA – Number of periods used to calculate the short term moving average.
+// MedEMA   – Number of periods used to calculate the medium term moving average.
+// LongEMA  – Number of periods used to calculate the long term moving average. 
+
+// How to use:
+// When T-Line cross Green Short EMA it can be used for scalping.
+// When Short EMA pulls back to Medium EMA you can buy more or sell more depending on 
+// without having to exit your position prematurely before trend direction changes.
+// This can also be used as position entry points to make sure you are getting the best possible price.
+// When T-Line, Short EMA and Medium EMA cross over Long EMA you go long or short.
+
+
+study(title="4 EMA With LW", shorttitle="4ema_LW", overlay=true)
+src = close
+
+TLineEMA = input(8, minval=1, title="Trigger Line")
+ShortEMA = input(13, minval=1, title="Short EMA")
+MedEMA   = input(34, minval=1, title="Medium EMA")
+LongEMA  = input(55, minval=1, title="Long EMA")
+
+fPivot = ((high + low + close)/3)
+
+TLine       = ema(close, TLineEMA)
+fShortEMA   = ema(fPivot, ShortEMA)
+fMedEMA     = ema(fPivot, MedEMA)
+fLongEMA    = ema(fPivot, LongEMA)
+
+plot(TLine, color=yellow, title="T-Line EMA", linewidth=2)
+plot(fShortEMA, color=green, title="Short EMA", linewidth=2)
+plot(fMedEMA, color=gray, title="Medium EMA", linewidth=2)
+plot(fLongEMA, color=maroon, title="Long EMA", linewidth=2)
+
+
+ma9 = ema(close, 9)
+plot(ma9, linewidth=1, color=white)
+above_ma9 = ma9[1] < ma9
+
+long = (not above_ma9[3] and not above_ma9[2] and not above_ma9[1] and above_ma9)
+plotshape(long, style=shape.triangleup, location=location.belowbar, size=size.tiny, color=lime, text='9.1')
+
+short = (above_ma9[3] and above_ma9[2] and above_ma9[1] and not above_ma9)
+plotshape(short, style=shape.triangledown, location=location.abovebar, size=size.tiny, color=red, text='9.1')

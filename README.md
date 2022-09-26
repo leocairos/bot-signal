@@ -25,6 +25,18 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 
 <br/>
 
+## 💱 Available Indicators
+- [X] fibonacciRetracement
+- [X] MFI
+  - Params: MFI(period = 14)
+  - Return: Current and Previous value
+- [X] RSI
+  - Params: MFI(period = 14)
+  - Return: Current and Previous value
+- [X] MACD
+- [X] SMA
+- [X] EMA
+
 ## 📆 Roadmap
 
 - [X] Connect to Binance Spot API
@@ -47,6 +59,17 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [X] Rest
   - [!] Websocket (using same charts of Spot, because values are very near)
 - [X] Suppress logs in production environment
+- [ ] One Telegram Bot for each Market (Spot / Future)
+  - [ ] Two CHAT_ID param
+- [ ] Option to monitor only favorite coins
+  - [ ] ONLY_FAVORITE_S coin in .env (if is empty, monitor all, else, monitor only coins in param)
+  - [ ] ONLY_FAVORITE_F coin in .env (if is empty, monitor all, else, monitor only coins in param)
+- [ ] Fix Scalp H7
+  - [ ] Use RSI and MFI correct params
+  - [ ] Use EMA 9
+- [ ] Fix URL coin only futures
+- [ ] Show in the README all available indicators and its params
+- [ ] Import strategy by JSON file
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
   - [ ] Summary Alerts by Strategy
@@ -72,3 +95,5 @@ sudo apt-get install -y libgbm-dev
 Code released under the [MIT License](./LICENSE).
 
 Make by [Leonardo Cairo](https://www.linkedin.com/in/leocairos/)!
+
+

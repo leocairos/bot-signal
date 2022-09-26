@@ -1,0 +1,77 @@
+// © leocairos 2022.09.25
+
+//SCALP do Agiota - By Henrique Sete
+//https://www.youtube.com/watch?v=QWO0JSDoQ2M&t=1247s
+
+// Scalp operations that last for minutes to make money fast.
+// The basis of the strategy is the exhaustion of a strong movement (very stretched upwards,
+// or too stretched down), based on some indicators
+// and analysis to define the entry point.
+
+//   * 5% bankroll maximum
+//   * Graphic time 15 min and 1HR
+//   * Target from 1% to 2%
+//   * Many opportunities arise at dawn
+//   * Isolated mode
+//   * 20x to 50x leverage
+//   *Stop loss 2%
+
+//   * How to find assets for setup
+//     * Highly valued or greatly undervalued currencies
+//     * Robot 7ZORD
+
+//   * Indicators:
+//     * RSI (Relative Strength Index) - Upper Ban = 80 ; Lower Ban = 20
+//     * MFI (Cash Flow Index) - Standard
+//     * EMA 9 - Watch the price move away from the average, every time the price moves too far from the average and hits the RSI AND MFI the setup tends to work out
+
+//   * Strategy
+//     - The asset MUST be in an uptrend/downtrend the strategy will not work on sideways assets
+//     - Follow the majority trend of BTC (bullish or bearish).
+
+//     - Short: RSI in the region of 80 and MFI in the region of 90. If it is in the resistance region it is even better.
+//     - Long: RSI in the region of 20 and MFI in the region of 10. If you are in the SUPPORT region it is even better.
+
+//     - 3 items to cancel an operation
+//       * Power candle
+//       * high volume
+//       * BTC in the opposite direction
+
+//@version=5
+strategy(title="Scalp Agiota - By H7", shorttitle="Scalp Agiota - By H7", overlay=true, default_qty_type = strategy.cash, default_qty_value=10, initial_capital=100, currency=currency.USD, commission_type = "percent", commission_value = 0.75, max_bars_back = 200)
+
+// EMA 9
+ema9 = ta.ema(close, 9)
+
+// RSI
+rsiLengthInput = input.int(14, minval=1, title="RSI Length", group="RSI Settings")
+rsiSourceInput = input.source(close, "Source", group="RSI Settings")
+up = ta.rma(math.max(ta.change(rsiSourceInput), 0), rsiLengthInput)
+down = ta.rma(-math.min(ta.change(rsiSourceInput), 0), rsiLengthInput)
+rsi = down == 0 ? 100 : up == 0 ? 0 : 100 - (100 / (1 + up / down))
+//rsiUpperBand = hline(70, "RSI Upper Band", color=color.new(#787B86, 50))
+//rsiLowerBand = hline(30, "RSI Lower Band", color=color.new(#787B86, 50))
+//plot(rsi, "RSI", color=#F57C00, linewidth=2)
+
+//MFI
+mfiLengthInput = input.int(title="Length", defval=14, minval=1, maxval=2000, group="MFI Settings")
+mfiSourceInput = input.source(hlc3, "Source", group="MFI Settings")
+mfi = ta.mfi(mfiSourceInput, mfiLengthInput)
+//mfiUpperBand=hline(80, title="MFI Upper Band", color=color.new(#787B86, 50))
+//mfiLowerBand=hline(20, title="MFI Lower Band", color=color.new(#787B86, 50))
+//hline(50, "Middle Band", color=color.new(#787B86, 25))
+//plot(mfi, "MFI", color=#0496FF, linewidth=2 )
+
+
+long = (rsi <= 20 and mfi <=10)
+plotshape(long, style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime, text='h7')
+
+short = (rsi >= 80 and mfi >=90)
+plotshape(short, style=shape.triangledown, location=location.abovebar, size=size.tiny, color=color.red, text='h7')
+
+lote = 1
+strategy.entry("long", strategy.long, lote, when =  long)
+strategy.entry("short", strategy.short, lote, when =  short)
+
+strategy.close("long", when = short)
+strategy.close("short", when = long)

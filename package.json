@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon ./src/index.js",
     "start": "node ./src/index.js",
-    "start-ex-futures": "node ./src/index.js ex-futures"
+    "start-only-futures": "node ./src/index.js only-futures"
   },
   "keywords": [],
   "author": {

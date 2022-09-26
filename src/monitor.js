@@ -13,6 +13,7 @@ let ticker24h = {}
 function doCalc(ohlc) {
   const rsi = RSI(ohlc.close)
   const mfi = MFI(ohlc)
+  const ema9 = EMA(ohlc.close, 9)
   const ema14 = EMA(ohlc.close, 14)
   const ema100 = EMA(ohlc.close, 100)
   const ema200 = EMA(ohlc.close, 200)
@@ -31,11 +32,11 @@ function doCalc(ohlc) {
   const isUpperPZero = (rsi.previous > 0 && mfi.previous > 0)
   const isOkToProcess = isNumberIndicator && isUpperZero && isNumberPIndicator && isUpperPZero
 
-  return [rsi, mfi, ema14, ema100, ema200, sma, macd, fib, txtOHLC, isOkToProcess];
+  return [rsi, mfi, ema9, ema14, ema100, ema200, sma, macd, fib, txtOHLC, isOkToProcess];
 }
 
 const doProcess = (alertSignals, symbol, interval, ohlc) => {
-  const [rsi, mfi, ema14, ema100, ema200, sma, macd, fib, txtOHLC, isOkToProcess] = doCalc(ohlc);
+  const [rsi, mfi, ema9, ema14, ema100, ema200, sma, macd, fib, txtOHLC, isOkToProcess] = doCalc(ohlc);
 
   let msg = `${symbol}_${interval} RSI: ${rsi.current}, MFI: ${mfi.current}`
 
@@ -56,6 +57,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     if (!isProductionEnv) console.log(msg)
 
+    msg += `, EMA9: ${formatNumber(ema9.current)}`
     msg += `, EMA14: ${formatNumber(ema14.current)}`
     msg += `, EMA100: ${formatNumber(ema100.current)}`
     msg += `, EMA200: ${formatNumber(ema200.current)}`
@@ -80,7 +82,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     if (overSold == true || overBought == true) {
       const signal = overSold ? 'overSold' : 'overBought';
-      alertSignals.insert({symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100});
+      alertSignals.insert({symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100});
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);
       // console.log(formattedAlert)

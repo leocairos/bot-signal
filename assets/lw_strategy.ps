@@ -1,0 +1,18 @@
+//@version=5
+strategy(title="Larry Williams 9.1", overlay=true)
+ma9 = ta.ema(close, 9)
+plot(ma9, linewidth=1, color=color.white)
+above_ma9 = ma9[1] < ma9
+
+long = (not above_ma9[3] and not above_ma9[2] and not above_ma9[1] and above_ma9)
+plotshape(long, style=shape.triangleup, location=location.belowbar, size=size.tiny, color=color.lime, text='9.1')
+
+short = (above_ma9[3] and above_ma9[2] and above_ma9[1] and not above_ma9)
+plotshape(short, style=shape.triangledown, location=location.abovebar, size=size.tiny, color=color.red, text='9.1')
+
+lote = 1
+strategy.entry("long", strategy.long, lote, when =  long)
+strategy.entry("short", strategy.short, lote, when =  short)
+
+strategy.close("long", when = short)
+strategy.close("short", when = long)
