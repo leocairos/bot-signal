@@ -65,7 +65,10 @@ module.exports = class AlertSignal {
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
     const sendedAlerts = [...alerts];
     
+    if (alertsBuy.length > 0 || alertsSell.length > 0) {
     telegramMessage += 'Strategy: Scalp Agiota by H7\n'
+    }
+    
     if (alertsBuy.length > 0) {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
