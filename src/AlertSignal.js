@@ -60,19 +60,23 @@ module.exports = class AlertSignal {
   }
 
   sendAlerts() {
-    let telegramMessage = ''
     const alertsUnSorted = [...this.ALERTS];
+    //sort and select top 10 to prevent error "message is too long" 
     const alerts = alertsUnSorted
       .sort((a, b) =>
         (a.ticker?.quoteVolume > b.ticker?.quoteVolume)
           ? 1
           : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
+      .slice(0, 10)
+
     console.log(alerts.length, 'alerts to send..')
+
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
     const sendedAlerts = [...alerts];
 
+    let telegramMessage = ''
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
       telegramMessage += 'STRATEGY: Scalp Agiota by H7\n\n'
     }
@@ -98,8 +102,8 @@ module.exports = class AlertSignal {
 
     if (telegramMessage !== '') {
       if (!isProductionEnv) console.log(telegramMessage)
-      console.log(alerts.length, 'alerts sent successfully!!!')
       sendMessageTelegram(telegramMessage);
+      console.log(alerts.length, 'alerts sent successfully!!!')
     }
 
     const alertsToSave = []
