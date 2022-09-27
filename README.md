@@ -74,10 +74,11 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Save alerts to persistent model (JSON or Database)
   - [!] Need create folder alerts in root path
 - [ ] Fix/Prevent telegram errors: 
-  - [ ] 2022-09-26T21:54:20: (node:808750) UnhandledPromiseRejectionWarning: Error: 400: Bad Request: message is too long
+  - [ ] Error: 400: Bad Request: message is too long
+  - [ ] Error: 429: Too Many Requests: retry after 5
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
-  - [X] Sort Alerts by Quote Volume last 24h
+  - [ ] Sort Alerts by Quote Volume last 24h
   - [ ] Summary Alerts by Strategy
     - [ ] Summary (One message with all alerts by strategy on last time interval)
     - [ ] Top 5 coins on 3 last time interval

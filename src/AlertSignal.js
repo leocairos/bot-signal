@@ -115,7 +115,10 @@ module.exports = class AlertSignal {
 
     const sendedAlerts = [...alerts];
     const messages = chunkArrayInGroups(alerts, 10)
-    messages.forEach(a => this.sendMessage(a))
+    messages.forEach(async a => {
+      await new Promise(r => setTimeout(r, 1000));
+      this.sendMessage(a)
+    })
     
     const alertsToSave = []
     sendedAlerts.forEach(a => {
