@@ -17,8 +17,8 @@ function getDifference(array1, array2) {
 
 function chunkArrayInGroups(arr, size) {
   var myArray = [];
-  for(var i = 0; i < arr.length; i += size) {
-    myArray.push(arr.slice(i, i+size));
+  for (var i = 0; i < arr.length; i += size) {
+    myArray.push(arr.slice(i, i + size));
   }
   return myArray;
 }
@@ -67,7 +67,7 @@ module.exports = class AlertSignal {
     return this.ALERTS;
   }
 
-  sendMessage(alerts) {
+  async sendMessage(alerts) {
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
@@ -98,6 +98,7 @@ module.exports = class AlertSignal {
 
     if (telegramMessage !== '') {
       if (!isProductionEnv) console.log(telegramMessage)
+      await new Promise(r => setTimeout(r, 1000));
       sendMessageTelegram(telegramMessage);
       console.log(alerts.length, 'alerts sent successfully!!!')
     }
@@ -109,17 +110,16 @@ module.exports = class AlertSignal {
     console.log(alertsUnSorted.length, 'alerts to send..')
     const alerts = alertsUnSorted
       .sort((a, b) =>
-        (a.ticker?.quoteVolume > b.ticker?.quoteVolume)
+        (parseFloat(a.ticker?.quoteVolume) > parseFloat(b.ticker?.quoteVolume))
           ? 1
-          : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
+          : ((parseFloat(b.ticker?.quoteVolume) > parseFloat(a.ticker?.quoteVolume))
+            ? -1
+            : 0))
 
     const sendedAlerts = [...alerts];
     const messages = chunkArrayInGroups(alerts, 10)
-    messages.forEach(async a => {
-      await new Promise(r => setTimeout(r, 1000));
-      this.sendMessage(a)
-    })
-    
+    messages.forEach(a => this.sendMessage(a) )
+
     const alertsToSave = []
     sendedAlerts.forEach(a => {
       this.LAST_ALERTS.push(a);
