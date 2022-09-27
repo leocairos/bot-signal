@@ -157,9 +157,9 @@ function htmlAlertSummary(symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9
 
   let html =
     `<b>${symbol_link} ${interval} is <u>${signal_link}</u></b> (${profit.toFixed(2)}%)
-    <b>Quote Vol 24h: </b><i>${quoteVolume}</i>  <b>Price Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
     <b>RSI: </b><i>${rsi.current} | ${rsi.previous}</i>  <b>MFI: </b><i>${mfi.current} | ${mfi.previous}</i>
     <b>Close: </b> <i>${lastClose}</i> <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
+    <b>Vol 24h: </b><i>${quoteVolume}</i> <b>Price Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
   `
   return html;
 }

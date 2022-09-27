@@ -64,14 +64,16 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [ ] Option to monitor only favorite coins
   - [ ] ONLY_FAVORITE_S coin in .env (if is empty, monitor all, else, monitor only coins in param)
   - [ ] ONLY_FAVORITE_F coin in .env (if is empty, monitor all, else, monitor only coins in param)
-- [ ] Fix Scalp H7
-  - [ ] Use RSI and MFI correct params
-  - [ ] Use EMA 9
+- [X] Fix Scalp H7
+  - [X] Use RSI and MFI correct params
+  - [X] Use EMA 9
 - [ ] Fix URL coin only futures
 - [ ] Show in the README all available indicators and its params
 - [ ] Import strategy by JSON file
+- [ ] Save alerts to persistent model (JSON or Database)
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
+  - [ ] Sort Alerts by Quote Volume last 24h
   - [ ] Summary Alerts by Strategy
     - [ ] Summary (One message with all alerts by strategy on last time interval)
     - [ ] Top 5 coins on 3 last time interval

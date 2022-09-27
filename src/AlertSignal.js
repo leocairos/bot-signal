@@ -58,7 +58,12 @@ module.exports = class AlertSignal {
 
   sendAlerts() {
     let telegramMessage = ''
-    const alerts = [...this.ALERTS];
+    const alertsUnSorted = [...this.ALERTS];
+    const alerts = alertsUnSorted
+      .sort((a,b) => 
+        (a.ticker?.quoteVolume > b.ticker?.quoteVolume) 
+        ? 1 
+        : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
     console.log(alerts.length, 'alerts to send..')
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
