@@ -15,6 +15,14 @@ function getDifference(array1, array2) {
   });
 }
 
+function chunkArrayInGroups(arr, size) {
+  var myArray = [];
+  for(var i = 0; i < arr.length; i += size) {
+    myArray.push(arr.slice(i, i+size));
+  }
+  return myArray;
+}
+
 module.exports = class AlertSignal {
 
   constructor() {
@@ -59,22 +67,10 @@ module.exports = class AlertSignal {
     return this.ALERTS;
   }
 
-  sendAlerts() {
-    const alertsUnSorted = [...this.ALERTS];
-    //sort and select top 10 to prevent error "message is too long" 
-    const alerts = alertsUnSorted
-      .sort((a, b) =>
-        (a.ticker?.quoteVolume > b.ticker?.quoteVolume)
-          ? 1
-          : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
-      .slice(0, 10)
-
-    console.log(alerts.length, 'alerts to send..')
-
+  sendMessage(alerts) {
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
-    const sendedAlerts = [...alerts];
 
     let telegramMessage = ''
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
@@ -105,7 +101,22 @@ module.exports = class AlertSignal {
       sendMessageTelegram(telegramMessage);
       console.log(alerts.length, 'alerts sent successfully!!!')
     }
+  }
 
+  sendAlerts() {
+    const alertsUnSorted = [...this.ALERTS];
+    //sort and select top 10 to prevent error "message is too long" 
+    console.log(alertsUnSorted.length, 'alerts to send..')
+    const alerts = alertsUnSorted
+      .sort((a, b) =>
+        (a.ticker?.quoteVolume > b.ticker?.quoteVolume)
+          ? 1
+          : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
+
+    const sendedAlerts = [...alerts];
+    const messages = chunkArrayInGroups(alerts, 10)
+    messages.forEach(a => this.sendMessage(alerts))
+    
     const alertsToSave = []
     sendedAlerts.forEach(a => {
       this.LAST_ALERTS.push(a);
