@@ -1,6 +1,9 @@
 const { htmlAlertSummary } = require("./util");
 const { sendMessageTelegram } = require("./telegram");
 
+const fs = require('fs');
+const path = require('path');
+
 const isProductionEnv = process.env.NODE_ENV === 'production';
 
 function getDifference(array1, array2) {
@@ -21,12 +24,12 @@ module.exports = class AlertSignal {
     this.FUTURES_SYMBOLS = []
   }
 
-  updateSymbols(spot, futures){
+  updateSymbols(spot, futures) {
     this.SPOT_SYMBOLS = [...spot]
     this.FUTURES_SYMBOLS = [...futures]
   }
 
-  getMarketType(symbol){
+  getMarketType(symbol) {
     const spot = [...this.SPOT_SYMBOLS]
     const futures = [...this.FUTURES_SYMBOLS]
     const isSpot = spot.find(s => s === symbol)
@@ -47,7 +50,7 @@ module.exports = class AlertSignal {
         a.symbol === symbol && a.interval === interval);
     const lastAlerts = [...(this.LAST_ALERTS)]
     const alreadySend = lastAlerts
-        .find(a => JSON.stringify(a) === JSON.stringify(alert))
+      .find(a => JSON.stringify(a) === JSON.stringify(alert))
     if (!exists && !alreadySend)
       this.ALERTS.push({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
   }
@@ -60,20 +63,20 @@ module.exports = class AlertSignal {
     let telegramMessage = ''
     const alertsUnSorted = [...this.ALERTS];
     const alerts = alertsUnSorted
-      .sort((a,b) => 
-        (a.ticker?.quoteVolume > b.ticker?.quoteVolume) 
-        ? 1 
-        : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
+      .sort((a, b) =>
+        (a.ticker?.quoteVolume > b.ticker?.quoteVolume)
+          ? 1
+          : ((b.ticker?.quoteVolume > a.ticker?.quoteVolume) ? -1 : 0))
     console.log(alerts.length, 'alerts to send..')
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
     const sendedAlerts = [...alerts];
-    
+
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
-    telegramMessage += 'STRATEGY: Scalp Agiota by H7\n\n'
+      telegramMessage += 'STRATEGY: Scalp Agiota by H7\n\n'
     }
-    
+
     if (alertsBuy.length > 0) {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
@@ -99,6 +102,26 @@ module.exports = class AlertSignal {
       sendMessageTelegram(telegramMessage);
     }
 
-    sendedAlerts.forEach(a => this.LAST_ALERTS.push(a))
+    const alertsToSave = []
+    sendedAlerts.forEach(a => {
+      this.LAST_ALERTS.push(a);
+      alertsToSave.push({
+        symbol: a.symbol,
+        signal: a.signal,
+        interval: a.interval,
+        rsi: { current: a.rsi.current, previous: a.rsi.previous },
+        mfi: { current: a.mfi.current, previous: a.mfi.previous },
+        ema9: a.ema9.current,
+        lastClose: a.ohlc.close[a.ohlc.close.length - 1],
+        lastTimeStamp: a.ohlc.lastTimeStamp,
+        ticker: { volume: a.ticker?.quoteVolume, priceChange: a.ticker?.percentChange },
+      })
+    })
+
+    //save alerts to persistent object
+    if (alertsToSave.length > 0) {
+      const fileName = path.resolve("alerts", `${new Date().getTime()}_scalpH7.json`);
+      fs.writeFileSync(fileName, JSON.stringify(alertsToSave));
+    }
   }
 }

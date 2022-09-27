@@ -14,6 +14,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 * Clone this repository
 * Access the folder
 * Create a .env file (use .env.example to help)
+* Create alert folder in root path
 * Install dependencies
   ```bash
   npm install
@@ -70,10 +71,11 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [ ] Fix URL coin only futures
 - [ ] Show in the README all available indicators and its params
 - [ ] Import strategy by JSON file
-- [ ] Save alerts to persistent model (JSON or Database)
+- [X] Save alerts to persistent model (JSON or Database)
+  - [!] Need create folder alerts in root path
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
-  - [ ] Sort Alerts by Quote Volume last 24h
+  - [X] Sort Alerts by Quote Volume last 24h
   - [ ] Summary Alerts by Strategy
     - [ ] Summary (One message with all alerts by strategy on last time interval)
     - [ ] Top 5 coins on 3 last time interval
