@@ -1,5 +1,5 @@
 const { htmlAlertSummary } = require("./util");
-const { sendMessageTelegram } = require("./telegram");
+const TelegramMessage = require("./telegram");
 
 const fs = require('fs');
 const path = require('path');
@@ -30,6 +30,7 @@ module.exports = class AlertSignal {
     this.LAST_ALERTS = []
     this.SPOT_SYMBOLS = []
     this.FUTURES_SYMBOLS = []
+    this.telegramMessages = new TelegramMessage();
   }
 
   updateSymbols(spot, futures) {
@@ -67,7 +68,7 @@ module.exports = class AlertSignal {
     return this.ALERTS;
   }
 
-  async sendMessage(alerts) {
+  async addMessage(alerts) {
     //console.log(alerts)
     const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
     const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
@@ -98,27 +99,32 @@ module.exports = class AlertSignal {
 
     if (telegramMessage !== '') {
       if (!isProductionEnv) console.log(telegramMessage)
-      await new Promise(r => setTimeout(r, 1000));
-      sendMessageTelegram(telegramMessage);
+      //await new Promise(r => setTimeout(r, 1000));
+      this.telegramMessages.addMessage(telegramMessage);
+      //sendMessageTelegram(telegramMessage);
       console.log(alerts.length, 'alerts sent successfully!!!')
     }
   }
+  
+  sendTelegramMessage(){
+    this.telegramMessages.sendMessagesTelegram();
+  }
 
-  sendAlerts() {
+  addMessagesAlert() {
     const alertsUnSorted = [...this.ALERTS];
     //sort and select top 10 to prevent error "message is too long" 
     console.log(alertsUnSorted.length, 'alerts to send..')
     const alerts = alertsUnSorted
       .sort((a, b) =>
         (parseFloat(a.ticker?.quoteVolume) > parseFloat(b.ticker?.quoteVolume))
-          ? 1
+          ? -1
           : ((parseFloat(b.ticker?.quoteVolume) > parseFloat(a.ticker?.quoteVolume))
-            ? -1
+            ? 1
             : 0))
 
     const sendedAlerts = [...alerts];
     const messages = chunkArrayInGroups(alerts, 10)
-    messages.forEach(a => this.sendMessage(a) )
+    messages.forEach(a => this.addMessage(a) )
 
     const alertsToSave = []
     sendedAlerts.forEach(a => {

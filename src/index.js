@@ -1,8 +1,7 @@
 require('dotenv-safe').config();
-const AlertSignal = require('./AlertSignal');
 const Exchange = require("./exchange");
+const AlertSignal = require("./AlertSignal");
 const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts, startMonitorTicker} = require("./monitor");
-const { sendMessageTelegram } = require("./telegram");
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
 const QUOTE = `${process.env.QUOTE}`;
@@ -62,7 +61,8 @@ async function doRun(isFuture = false){
 
 setInterval(()=>{
   //console.log(alertSignals.getAlerts())
-  alertSignals.sendAlerts();
+  alertSignals.addMessagesAlert();
+  alertSignals.sendTelegramMessage();
 }, SEND_ALERT_INTERVAL * 1000)
 //doRun();
 
