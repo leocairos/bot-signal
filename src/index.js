@@ -34,6 +34,10 @@ async function doRun(isFuture = false){
   const exchange = new Exchange();
 
   const spotSymbols = await getSpotSymbols(exchange);
+
+  //delay between 2s and 5s to prevent code -1003 Way too many requests... banned until... when run in parallel
+  await new Promise(r => setTimeout(r, (Math.floor(Math.random() * 3) * 1000) + 2) );
+  
   const futuresSymbols = await getFutureSymbols(exchange);
 
   alertSignals.updateSymbols(spotSymbols, futuresSymbols);
