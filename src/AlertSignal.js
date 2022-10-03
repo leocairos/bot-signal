@@ -41,6 +41,10 @@ module.exports = class AlertSignal {
     this.TOP_SYMBOLS_BASE = [...topSymbols]
   }
 
+  getCountFuturesSymbol() {
+    return this.FUTURES_SYMBOLS.length;
+  }
+
   isTopSymbol(symbol) {
     return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
   }

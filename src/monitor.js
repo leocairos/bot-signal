@@ -3,6 +3,7 @@ const { RSI, MFI, EMA, fibonacciRetracement, SMA, MACD } = require("./indicators
 const { formatNumber } = require("./util");
 
 const isProductionEnv = process.env.NODE_ENV === 'production';
+const alertOnlyFutures = process.env.ALERT_ONLY_FUTURES === 'true';
 const RSI_LIMITS = process.env.RSI_LIMITS ? process.env.RSI_LIMITS.split(',') : [30, 70];
 const MFI_LIMITS = process.env.MFI_LIMITS ? process.env.MFI_LIMITS.split(',') : [20, 80];
 const USE_INVERSE_CONDITIONS = !process.env.USE_INVERSE_CONDITIONS || process.env.USE_INVERSE_CONDITIONS === 'true'
@@ -37,6 +38,10 @@ function doCalc(ohlc) {
 }
 
 const doProcess = (alertSignals, symbol, interval, ohlc) => {
+  const marketType = alertSignals.getMarketType(symbol);
+  const countFutures = alertSignals.getCountFuturesSymbol();
+  if (alertOnlyFutures === true && marketType === 'S' && countFutures > 2) return;
+
   const [rsi, mfi, ema9, ema14, ema100, ema200, sma, macd, fib, txtOHLC, isOkToProcess] = doCalc(ohlc);
 
   let msg = `${symbol}_${interval} RSI: ${rsi.current}, MFI: ${mfi.current}`
@@ -80,6 +85,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
     msg += `, FibDown: ${fibPT}`
 
     //console.log(msg)
+
 
     if (overSold == true || overBought == true) {
       const signal = overSold ? 'overSold' : 'overBought';
