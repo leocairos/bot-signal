@@ -7,6 +7,8 @@ const isProductionEnv = process.env.NODE_ENV === 'production';
 const RSI_LIMITS = process.env.RSI_LIMITS ? process.env.RSI_LIMITS.split(',') : [30, 70];
 const MFI_LIMITS = process.env.MFI_LIMITS ? process.env.MFI_LIMITS.split(',') : [20, 80];
 const USE_INVERSE_CONDITIONS = !process.env.USE_INVERSE_CONDITIONS || process.env.USE_INVERSE_CONDITIONS === 'true'
+const MINIMUM_QUOTE_VOLUME_ALERT= parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
+const MINIMUM_PERCENT_CHANGE_ALERT= parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
 
 let ticker24h = {}
 
@@ -79,11 +81,16 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
     msg += `, FibDown: ${fibPT}`
 
     //console.log(msg)
-
-    if (overSold == true || overBought == true) {
+    
+    if (overSold == true || overBought == true){
       const signal = overSold ? 'overSold' : 'overBought';
       const ticker = ticker24h[symbol];
-      alertSignals.insert({symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100});
+      const quoteVolume = parseFloat(ticker?.quoteVolume) || 0;
+      const percentChange = parseFloat(ticker?.percentChange) || 0;
+      const isQuoteAlert = quoteVolume === 0 || quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
+      const isPercentAlert = Math.abs(percentChange) === 0 || Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT
+      if (isQuoteAlert && isPercentAlert)
+        alertSignals.insert({symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100});
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);
       // console.log(formattedAlert)

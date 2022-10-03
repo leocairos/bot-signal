@@ -81,16 +81,16 @@ module.exports = class AlertSignal {
     if (alertsBuy.length > 0) {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
-        const formattedAlert = htmlAlertSummary(a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         const mt = this.getMarketType(a.symbol);
+        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
     }
     if (alertsSell.length > 0) {
       telegramMessage += 'SELL SIGNALS\n'
       alertsSell.forEach(a => {
-        const formattedAlert = htmlAlertSummary(a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         const mt = this.getMarketType(a.symbol);
+        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
     }

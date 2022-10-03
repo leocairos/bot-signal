@@ -137,13 +137,14 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
+function htmlAlertSummary(marketType,symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
   const lastOpen = formatNumber(ohlc.open[ohlc.close.length - 1]);
   const lastClose = formatNumber(ohlc.close[ohlc.close.length - 1]);
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
   const ema9C = formatNumber(ema9.current);
   const ema100C = formatNumber(ema100.current);
-  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}`;
+  const symbolSuffix = marketType === 'S' ? '' : 'PERP';
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
   const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
