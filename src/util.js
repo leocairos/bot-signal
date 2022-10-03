@@ -174,4 +174,4 @@ const removeFile = (pathToFile) =>
     }
   })
 
-module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber }
+module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber, compactNumber }

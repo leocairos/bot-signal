@@ -89,7 +89,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
       const percentChange = parseFloat(ticker?.percentChange) || 0;
       const isQuoteAlert = quoteVolume === 0 || quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
       const isPercentAlert = Math.abs(percentChange) === 0 || Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT
-      if (isQuoteAlert && isPercentAlert)
+      if (isQuoteAlert || isPercentAlert)
         alertSignals.insert({symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100});
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);

@@ -2,10 +2,13 @@ require('dotenv-safe').config();
 const Exchange = require("./exchange");
 const AlertSignal = require("./AlertSignal");
 const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts, startMonitorTicker} = require("./monitor");
+const { compactNumber } = require("./util");
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
 const QUOTE = `${process.env.QUOTE}`;
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
+const MINIMUM_QUOTE_VOLUME_ALERT= parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
+const MINIMUM_PERCENT_CHANGE_ALERT= parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
 const alertSignals = new AlertSignal();
 
 async function getSpotSymbols(exchange){
@@ -53,6 +56,17 @@ async function doRun(isFuture = false){
   console.log(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
   console.log(`  - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
   
+  MINIMUM_QUOTE_VOLUME_ALERT
+  MINIMUM_PERCENT_CHANGE_ALERT
+  if (MINIMUM_QUOTE_VOLUME_ALERT !== 0 || MINIMUM_PERCENT_CHANGE_ALERT !== 0){
+    console.log(`Alerts only when (by last 24h): `)
+    if (MINIMUM_QUOTE_VOLUME_ALERT !== 0)
+      console.log(` - Quote volume is >= ${compactNumber(MINIMUM_QUOTE_VOLUME_ALERT)}.`)
+    if (MINIMUM_PERCENT_CHANGE_ALERT !== 0)
+      console.log(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
+  }
+
+
   startMonitorTicker(exchange);
   INTERVALS.forEach( interval => {
     if (!isFuture)
