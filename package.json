@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/index.js",
+    "dev": "nodemon --watch src ./src/index.js",
     "start": "node ./src/index.js",
     "start-only-futures": "node ./src/index.js only-futures"
   },
@@ -14,6 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.27.2",
     "dotenv-safe": "^8.2.0",
     "node-binance-api": "^0.13.1",
     "puppeteer": "^17.1.1",

@@ -1,8 +1,12 @@
 const puppeteer = require('puppeteer');
 const fs = require("fs")
+const axios = require("axios");
 
 const pageWidth = 860;
 const pageHeight = 460;
+
+const TOP_X_TO_FAVORITE = process.env.TOP_X_TO_FAVORITE || 20;
+const CMC_PRO_API_KEY = process.env.CMC_PRO_API_KEY;
 
 function intervalHTMLConvert(interval) {
   switch (interval) {
@@ -137,7 +141,7 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(marketType,symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
+function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
   const lastOpen = formatNumber(ohlc.open[ohlc.close.length - 1]);
   const lastClose = formatNumber(ohlc.close[ohlc.close.length - 1]);
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
@@ -174,4 +178,38 @@ const removeFile = (pathToFile) =>
     }
   })
 
-module.exports = { htmlAlertFormatted, htmlAlertSummary, makeChartImage, removeFile, formatNumber, compactNumber }
+async function getTopCoinmarketcap() {
+  const api = axios.create({
+    baseURL: 'https://pro-api.coinmarketcap.com'
+  });
+
+  api.interceptors.request.use(async (config) => {
+    config.headers['X-CMC_PRO_API_KEY'] = CMC_PRO_API_KEY
+    return config;
+  })
+
+  const result = await api.get('/v1/cryptocurrency/listings/latest');
+  const topSymbols = result.data.data.map(item => (
+    {
+      id: item.id,
+      name: item.name,
+      symbol: item.symbol,
+      cmc_rank: item.cmc_rank,
+      usdValue: item.quote.USD.price,
+      usdVolume24h: item.quote.USD.volume_24h,
+      usdPercentChange24h: item.quote.USD.percent_change_24h,
+    }
+  )).filter(s => s.cmc_rank <= TOP_X_TO_FAVORITE);
+  //console.log(topSymbols);
+  return topSymbols;
+}
+
+module.exports = {
+  htmlAlertFormatted,
+  htmlAlertSummary,
+  makeChartImage,
+  removeFile,
+  formatNumber,
+  compactNumber,
+  getTopCoinmarketcap
+}

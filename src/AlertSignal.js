@@ -3,6 +3,7 @@ const TelegramMessage = require("./telegram");
 
 const fs = require('fs');
 const path = require('path');
+const QUOTE = `${process.env.QUOTE}`;
 
 const isProductionEnv = process.env.NODE_ENV === 'production';
 
@@ -30,12 +31,18 @@ module.exports = class AlertSignal {
     this.LAST_ALERTS = []
     this.SPOT_SYMBOLS = []
     this.FUTURES_SYMBOLS = []
+    this.TOP_SYMBOLS_BASE = []
     this.telegramMessages = new TelegramMessage();
   }
 
-  updateSymbols(spot, futures) {
+  updateSymbols(spot, futures, topSymbols) {
     this.SPOT_SYMBOLS = [...spot]
     this.FUTURES_SYMBOLS = [...futures]
+    this.TOP_SYMBOLS_BASE = [...topSymbols]
+  }
+
+  isTopSymbol(symbol) {
+    return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
   }
 
   getMarketType(symbol) {
@@ -105,8 +112,8 @@ module.exports = class AlertSignal {
       console.log(alerts.length, 'alerts sent successfully!!!')
     }
   }
-  
-  sendTelegramMessage(){
+
+  sendTelegramMessage() {
     this.telegramMessages.sendMessagesTelegram();
   }
 
@@ -124,7 +131,7 @@ module.exports = class AlertSignal {
 
     const sendedAlerts = [...alerts];
     const messages = chunkArrayInGroups(alerts, 10)
-    messages.forEach(a => this.addMessage(a) )
+    messages.forEach(a => this.addMessage(a))
 
     const alertsToSave = []
     sendedAlerts.forEach(a => {
