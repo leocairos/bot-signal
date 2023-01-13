@@ -87,9 +87,9 @@ async function doRun(isFuture = false) {
     if (MINIMUM_PERCENT_CHANGE_ALERT !== 0)
       doLogStartMsg(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
   }
-  const topSymbolsBase = [...topSymbols].map(s => s.symbol)
+  const topSymbolsBase = [...topSymbols].map(s => s.symbol + ' ')
 
-  doLogStartMsg(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
+  doLogStartMsg(`Always alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
   doSendStartLog();
 
   startMonitorTicker(exchange);
