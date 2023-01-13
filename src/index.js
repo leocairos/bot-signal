@@ -17,6 +17,8 @@ const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHAN
 const alertSignals = new AlertSignal();
 const telegramStartMessages = new TelegramMessage();
 
+const msgLogStart = [];
+
 async function getSpotSymbols(exchange) {
   const spotSymbols = await exchange.exchangeInfo();
   const spotFilteredSymbols = [...spotSymbols.symbols]
@@ -38,7 +40,7 @@ async function getFutureSymbols(exchange) {
 }
 
 function doLogStartMsg(msg) {
-  telegramStartMessages.addMessage(msg);
+  msgLogStart[msgLogStart.length] = msg
   console.log(msg);
 }
 
@@ -81,6 +83,7 @@ async function doRun(isFuture = false) {
   const topSymbolsBase = [...topSymbols].map(s => s.symbol)
 
   doLogStartMsg(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
+  telegramStartMessages.addMessage(msgLogStart);
   telegramStartMessages.sendMessagesTelegram();
 
   startMonitorTicker(exchange);
