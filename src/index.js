@@ -40,13 +40,13 @@ async function getFutureSymbols(exchange) {
 }
 
 function doLogStartMsg(msg) {
-  msgLogStart[msgLogStart.length] = msg;
+  msgLogStart[msgLogStart.length] = msgLogStart.length == 0 ? `<b>${msg}</b>` : msg;
   console.log(msg);
 }
 
 function doSendStartLog() {
   let telegramMessage = ''
-  msgLogStart.forEach(async message => telegramMessage += message);
+  msgLogStart.forEach(async message => telegramMessage += message + '\n');
   telegramStartMessages.addMessage(telegramMessage);
   telegramStartMessages.sendMessagesTelegram();
 }
