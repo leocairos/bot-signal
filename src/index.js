@@ -40,8 +40,15 @@ async function getFutureSymbols(exchange) {
 }
 
 function doLogStartMsg(msg) {
-  msgLogStart[msgLogStart.length] = msg
+  msgLogStart[msgLogStart.length] = msg;
   console.log(msg);
+}
+
+function doSendStartLog() {
+  let telegramMessage = ''
+  msgLogStart.forEach(async message => telegramMessage += message);
+  telegramStartMessages.addMessage(telegramMessage);
+  telegramStartMessages.sendMessagesTelegram();
 }
 
 async function doRun(isFuture = false) {
@@ -83,8 +90,7 @@ async function doRun(isFuture = false) {
   const topSymbolsBase = [...topSymbols].map(s => s.symbol)
 
   doLogStartMsg(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
-  telegramStartMessages.addMessage(msgLogStart);
-  telegramStartMessages.sendMessagesTelegram('MarkdownV2', false);
+  doSendStartLog();
 
   startMonitorTicker(exchange);
   INTERVALS.forEach(interval => {
