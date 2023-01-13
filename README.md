@@ -60,15 +60,13 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [X] Rest
   - [!] Websocket (using same charts of Spot, because values are very near)
 - [X] Suppress logs in production environment
-- [ ] One Telegram Bot for each Market (Spot / Future)
-  - [ ] Two CHAT_ID param
 - [ ] Option to monitor only favorite coins
   - [ ] ONLY_FAVORITE_S coin in .env (if is empty, monitor all, else, monitor only coins in param)
   - [ ] ONLY_FAVORITE_F coin in .env (if is empty, monitor all, else, monitor only coins in param)
 - [X] Fix Scalp H7
   - [X] Use RSI and MFI correct params
   - [X] Use EMA 9
-- [ ] Fix URL coin only futures
+- [X] Fix URL coin only futures
 - [ ] Show in the README all available indicators and its params
 - [ ] Import strategy by JSON file
 - [X] Save alerts to persistent model (JSON or Database)
