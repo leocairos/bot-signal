@@ -1,0 +1,21 @@
+{
+    "apps": [
+        {
+            "name": "bot-signal-sf",
+            "script": "npm",
+            "args": "start",
+            "cron_restart": "0 0 * * *",
+            "max_memory_restart": "1024M",
+            "time": true,
+            "log_date_format": "YYYY-MM-DD HH:mm Z",
+            "restart_delay": 4000,
+            "max_restarts" : 500,
+            "watch": ["server", "client"],
+            "watch_delay": 3000,
+            "ignore_watch": [ "[\/\\]\\./" , "node_modules", "assets", "alerts", "tmp"],
+            "watch_options": {
+                "followSymlinks": false
+            }
+        }
+    ]
+}
