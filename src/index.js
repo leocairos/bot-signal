@@ -2,7 +2,9 @@ require('dotenv-safe').config();
 
 const Exchange = require("./exchange");
 const AlertSignal = require("./AlertSignal");
-const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts, startMonitorTicker } = require("./monitor");
+const TelegramMessage = require("./telegram");
+
+const { startMonitor, RSI_LIMITS, MFI_LIMITS, startMonitorTicker } = require("./monitor");
 const { compactNumber, getTopCoinmarketcap } = require("./util");
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
@@ -11,7 +13,9 @@ const QUOTE = `${process.env.QUOTE}`;
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
+
 const alertSignals = new AlertSignal();
+const telegramStartMessages = new TelegramMessage();
 
 async function getSpotSymbols(exchange) {
   const spotSymbols = await exchange.exchangeInfo();
@@ -33,8 +37,13 @@ async function getFutureSymbols(exchange) {
   return futuresFilteredSymbols || [''];
 }
 
+function doLogStartMsg(msg) {
+  telegramStartMessages.addMessage(msg);
+  console.log(msg);
+}
+
 async function doRun(isFuture = false) {
-  console.log(`System started at ${new Date().toISOString()}\n`)
+  doLogStartMsg(`System started at ${new Date().toISOString()}\n`);
 
   const exchange = new Exchange();
 
@@ -51,27 +60,28 @@ async function doRun(isFuture = false) {
   const bothSymbols = futuresSymbols.filter(x => spotSymbols.includes(x));
   const onlyFutures = futuresSymbols.filter(x => !spotSymbols.includes(x));
 
-  console.log(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`)
+  doLogStartMsg(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`);
   if (!isFuture)
-    console.log(` - ${spotSymbols.length} spot symbols.\n - ${bothSymbols.length} futures symbols.\n`)
+    doLogStartMsg(` - ${spotSymbols.length} spot symbols.\n - ${bothSymbols.length} futures symbols.\n`)
   else
-    console.log(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
+    doLogStartMsg(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
 
-  console.log(`Alerts only futures: ${ALERT_ONLY_FUTURES}.\n`)
+  doLogStartMsg(`Alerts only futures: ${ALERT_ONLY_FUTURES}.\n`)
 
-  console.log(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
-  console.log(` - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
+  doLogStartMsg(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
+  doLogStartMsg(` - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
 
   if (MINIMUM_QUOTE_VOLUME_ALERT !== 0 || MINIMUM_PERCENT_CHANGE_ALERT !== 0) {
-    console.log(`Alerts only when (by last 24h): `)
+    doLogStartMsg(`Alerts only when (by last 24h): `)
     if (MINIMUM_QUOTE_VOLUME_ALERT !== 0)
-      console.log(` - Quote volume is >= ${compactNumber(MINIMUM_QUOTE_VOLUME_ALERT)}.`)
+      doLogStartMsg(` - Quote volume is >= ${compactNumber(MINIMUM_QUOTE_VOLUME_ALERT)}.`)
     if (MINIMUM_PERCENT_CHANGE_ALERT !== 0)
-      console.log(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
+      doLogStartMsg(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
   }
   const topSymbolsBase = [...topSymbols].map(s => s.symbol)
 
-  console.log(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
+  doLogStartMsg(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
+  telegramStartMessages.sendMessagesTelegram();
 
   startMonitorTicker(exchange);
   INTERVALS.forEach(interval => {
