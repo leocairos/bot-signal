@@ -25,7 +25,7 @@ module.exports = class TelegramMessage {
     const messages = [...this.MESSAGES]
     messages
       .forEach(async message => {
-        await new Promise(r => setTimeout(r, 3000));
+        await new Promise(r => setTimeout(r, 2000));
         this.bot.telegram
           .sendMessage(
             CHAT_ID,

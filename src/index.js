@@ -84,7 +84,7 @@ async function doRun(isFuture = false) {
 
   doLogStartMsg(`TOP ${topSymbols.length} symbols: ${topSymbolsBase}.\n`);
   telegramStartMessages.addMessage(msgLogStart);
-  telegramStartMessages.sendMessagesTelegram('Markdown', false);
+  telegramStartMessages.sendMessagesTelegram('MarkdownV2', false);
 
   startMonitorTicker(exchange);
   INTERVALS.forEach(interval => {
