@@ -86,7 +86,8 @@ module.exports = class AlertSignal {
 
     let telegramMessage = ''
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
-      telegramMessage += 'STRATEGY: Scalp Agiota by H7\n\n'
+      telegramMessage += 'STRATEGY: Scalp Agiota by H7\n'
+      telegramMessage += `   at ${new Date().toISOString()}\n\n`
     }
 
     if (alertsBuy.length > 0) {

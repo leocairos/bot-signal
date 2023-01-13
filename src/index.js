@@ -75,7 +75,7 @@ async function doRun(isFuture = false) {
   else
     doLogStartMsg(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
 
-  doLogStartMsg(`Alerts only futures: ${ALERT_ONLY_FUTURES}.\n`)
+  doLogStartMsg(`Alerts only futures: ${ALERT_ONLY_FUTURES && isFuture}.\n`)
 
   doLogStartMsg(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
   doLogStartMsg(` - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
