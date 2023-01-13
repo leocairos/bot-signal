@@ -6,6 +6,7 @@ const { startMonitor, RSI_LIMITS, MFI_LIMITS, cleanAlerts, getAlerts, startMonit
 const { compactNumber, getTopCoinmarketcap } = require("./util");
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
+const ALERT_ONLY_FUTURES = process.env.ALERT_ONLY_FUTURES;
 const QUOTE = `${process.env.QUOTE}`;
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
@@ -56,8 +57,10 @@ async function doRun(isFuture = false) {
   else
     console.log(` - ${onlyFutures.length} futures symbols (only in Futures).\n`)
 
+  console.log(`Alerts only futures: ${ALERT_ONLY_FUTURES}.\n`)
+
   console.log(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
-  console.log(`  - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
+  console.log(` - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).\n`)
 
   if (MINIMUM_QUOTE_VOLUME_ALERT !== 0 || MINIMUM_PERCENT_CHANGE_ALERT !== 0) {
     console.log(`Alerts only when (by last 24h): `)

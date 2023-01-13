@@ -147,7 +147,7 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
   const ema9C = formatNumber(ema9.current);
   const ema100C = formatNumber(ema100.current);
-  const symbolSuffix = marketType === 'S' ? '' : 'PERP';
+  const symbolSuffix = marketType.includes('F') ? 'PERP' : '';
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
   const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
   const symbol_link = `<a href="${url2}">${symbol}</a>`
