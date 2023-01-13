@@ -17,11 +17,11 @@ module.exports = class TelegramMessage {
     this.MESSAGES = []
   }
 
-  addMessage(message){
+  addMessage(message) {
     this.MESSAGES.push(message);
   }
 
-  sendMessagesTelegram() {
+  sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
     const messages = [...this.MESSAGES]
     messages
       .forEach(async message => {
@@ -30,7 +30,7 @@ module.exports = class TelegramMessage {
           .sendMessage(
             CHAT_ID,
             message,
-            { parse_mode: 'html', disable_web_page_preview: true })
+            { parse_mode, disable_web_page_preview })
       });
 
     this.MESSAGES = getDifference(this.MESSAGES, messages)
