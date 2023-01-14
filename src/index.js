@@ -63,9 +63,9 @@ async function doRun(isFuture = false) {
 
   const futuresSymbols = await getFutureSymbols(exchange);
 
-  const topSymbols = await getTopCoinmarketcap();
+  const [topSymbols, cmSymbols] = await getTopCoinmarketcap();
 
-  alertSignals.updateSymbols(spotSymbols, futuresSymbols, topSymbols);
+  alertSignals.updateSymbols(spotSymbols, futuresSymbols, topSymbols, cmSymbols);
   const bothSymbols = futuresSymbols.filter(x => spotSymbols.includes(x));
   const onlyFutures = futuresSymbols.filter(x => !spotSymbols.includes(x));
 

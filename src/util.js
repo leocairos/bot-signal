@@ -141,7 +141,7 @@ function htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema
   return html;
 }
 
-function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100) {
+function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100, cmSymbol) {
   const lastOpen = formatNumber(ohlc.open[ohlc.close.length - 1]);
   const lastClose = formatNumber(ohlc.close[ohlc.close.length - 1]);
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
@@ -149,7 +149,8 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
   const ema100C = formatNumber(ema100.current);
   const symbolSuffix = marketType.includes('F') ? 'PERP' : '';
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
-  const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
+  //const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
+  const url2 = `https://coinmarketcap.com/currencies/${cmSymbol.slug}/`;
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit = ((lastClose / lastOpen) - 1) * 100;
@@ -166,6 +167,7 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
     <b>Close: </b> <i>${lastClose}</i> <b>EMA_9: </b> <i>${ema9C}</i> (${ema9P.toFixed(2)}%)
     <b>Vol 24h: </b><i>${quoteVolume}</i> <b>Price Change 24h: </b><i>${percentChange.toFixed(2)}%</i>
   `
+  //console.log(html)
   return html;
 }
 
@@ -188,20 +190,23 @@ async function getTopCoinmarketcap() {
     return config;
   })
 
-  const result = await api.get('/v1/cryptocurrency/listings/latest');
-  const topSymbols = result.data.data.map(item => (
+  const result = await api.get('/v1/cryptocurrency/listings/latest?sort=market_cap&limit=5000');
+  const cmSymbols = result.data.data.map(item => (
     {
       id: item.id,
       name: item.name,
+      slug: item.slug,
       symbol: item.symbol,
       cmc_rank: item.cmc_rank,
       usdValue: item.quote.USD.price,
       usdVolume24h: item.quote.USD.volume_24h,
       usdPercentChange24h: item.quote.USD.percent_change_24h,
+      market_cap: item.quote?.USD?.market_cap,
     }
-  )).filter(s => s.cmc_rank <= TOP_X_TO_FAVORITE);
+  ))
+  const topSymbols = [...cmSymbols].filter(s => s.cmc_rank <= TOP_X_TO_FAVORITE);
   //console.log(topSymbols);
-  return topSymbols;
+  return [topSymbols, cmSymbols];
 }
 
 module.exports = {

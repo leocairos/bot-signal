@@ -32,13 +32,15 @@ module.exports = class AlertSignal {
     this.SPOT_SYMBOLS = []
     this.FUTURES_SYMBOLS = []
     this.TOP_SYMBOLS_BASE = []
+    this.CM_SYMBOLS_BASE = []
     this.telegramMessages = new TelegramMessage();
   }
 
-  updateSymbols(spot, futures, topSymbols) {
+  updateSymbols(spot, futures, topSymbols, cmSymbols) {
     this.SPOT_SYMBOLS = [...spot]
     this.FUTURES_SYMBOLS = [...futures]
     this.TOP_SYMBOLS_BASE = [...topSymbols]
+    this.CM_SYMBOLS_BASE = [...cmSymbols]
   }
 
   getCountFuturesSymbol() {
@@ -47,6 +49,13 @@ module.exports = class AlertSignal {
 
   isTopSymbol(symbol) {
     return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
+  }
+
+  getCmSymbol(symbol) {
+    const cmSymbols = [...this.CM_SYMBOLS_BASE];
+    const baseAsset = symbol.replace(QUOTE, '');
+    const cmSymbol = cmSymbols.find(s => s.symbol === baseAsset);
+    return cmSymbol;
   }
 
   getMarketType(symbol) {
@@ -94,7 +103,9 @@ module.exports = class AlertSignal {
       telegramMessage += 'BUY SIGNALS\n'
       alertsBuy.forEach(a => {
         const mt = this.getMarketType(a.symbol);
-        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
+        const cmSymbol = this.getCmSymbol(a.symbol);
+        //console.log(cmSymbol);
+        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100, cmSymbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
     }
@@ -102,7 +113,9 @@ module.exports = class AlertSignal {
       telegramMessage += 'SELL SIGNALS\n'
       alertsSell.forEach(a => {
         const mt = this.getMarketType(a.symbol);
-        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100);
+        const cmSymbol = this.getCmSymbol(a.symbol);
+        //console.log(cmSymbol);
+        const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100, cmSymbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
     }
