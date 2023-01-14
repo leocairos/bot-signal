@@ -63,29 +63,28 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     if (!isProductionEnv) console.log(msg)
 
-    msg += `, EMA9: ${formatNumber(ema9.current)}`
-    msg += `, EMA14: ${formatNumber(ema14.current)}`
-    msg += `, EMA100: ${formatNumber(ema100.current)}`
-    msg += `, EMA200: ${formatNumber(ema200.current)}`
-    msg += `, SMA: ${formatNumber(sma.current)}`
+    // msg += `, EMA9: ${formatNumber(ema9.current)}`
+    // msg += `, EMA14: ${formatNumber(ema14.current)}`
+    // msg += `, EMA100: ${formatNumber(ema100.current)}`
+    // msg += `, EMA200: ${formatNumber(ema200.current)}`
+    // msg += `, SMA: ${formatNumber(sma.current)}`
 
-    let macdC = {
-      "MACD": formatNumber(macd.current.MACD),
-      "signal": formatNumber(macd.current.signal),
-      "histogram": formatNumber(macd.current.histogram)
-    }
-    msg += `, MACD: ${JSON.stringify(macdC)}`
+    // let macdC = {
+    //   "MACD": formatNumber(macd.current.MACD),
+    //   "signal": formatNumber(macd.current.signal),
+    //   "histogram": formatNumber(macd.current.histogram)
+    // }
+    // msg += `, MACD: ${JSON.stringify(macdC)}`
 
-    let fibCT = '';
-    let fibPT = '';
-    fib.current.map(f => formatNumber(f)).forEach(f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
-    fib.previous.map(f => formatNumber(f)).forEach(f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
+    // let fibCT = '';
+    // let fibPT = '';
+    // fib.current.map(f => formatNumber(f)).forEach(f => fibCT === '' ? fibCT += f : fibCT += ', ' + f)
+    // fib.previous.map(f => formatNumber(f)).forEach(f => fibPT === '' ? fibPT += f : fibPT += ', ' + f)
 
-    msg += `, FibUp: ${fibCT}`
-    msg += `, FibDown: ${fibPT}`
+    // msg += `, FibUp: ${fibCT}`
+    // msg += `, FibDown: ${fibPT}`
 
     //console.log(msg)
-
 
     if (overSold == true || overBought == true) {
       const signal = overSold ? 'overSold' : 'overBought';
@@ -115,22 +114,22 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
 }
 
-function addAlert(symbol, timeStamp, interval, signal, rsi, mfi, ema14,
-  ema100, ema200, sma, macd, fib, lastOHLC, formattedAlert) {
-  const exists = ALERTS.find(a => a.symbol === symbol && a.timeStamp === timeStamp)
-  if (!exists) {
-    ALERTS.push({
-      symbol,
-      timeStamp,
-      interval,
-      signal,
-      indicators: [
-        rsi, mfi, ema14, ema100, ema200, sma, macd, fib, lastOHLC
-      ],
-      formattedAlert
-    })
-  }
-}
+// function addAlert(symbol, timeStamp, interval, signal, rsi, mfi, ema14,
+//   ema100, ema200, sma, macd, fib, lastOHLC, formattedAlert) {
+//   const exists = ALERTS.find(a => a.symbol === symbol && a.timeStamp === timeStamp)
+//   if (!exists) {
+//     ALERTS.push({
+//       symbol,
+//       timeStamp,
+//       interval,
+//       signal,
+//       indicators: [
+//         rsi, mfi, ema14, ema100, ema200, sma, macd, fib, lastOHLC
+//       ],
+//       formattedAlert
+//     })
+//   }
+// }
 
 async function startMonitor(exchange, alertSignals, symbol, interval, isFuture = false) {
   return await exchange.chartStream(alertSignals, symbol, interval, doProcess, isFuture);
