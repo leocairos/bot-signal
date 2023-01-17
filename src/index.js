@@ -1,5 +1,7 @@
 require('dotenv-safe').config();
 
+const fs = require('fs');
+
 const Exchange = require("./exchange");
 const AlertSignal = require("./AlertSignal");
 const TelegramMessage = require("./telegram");
@@ -102,6 +104,24 @@ async function doRun(isFuture = false) {
 
 }
 
+// async function doSummary() {
+//   let tsNow = Math.round(new Date().getTime() / 1000);
+//   let tsYesterday = tsNow - (24 * 3600);
+
+//   const filenames = fs.readdirSync('alerts');
+
+//   console.log('tsYesterday:', tsYesterday);
+//   console.log('Total Files:', filenames.length);
+
+//   const filenamesLast24h = [...filenames]
+//     .filter(filename => Math.round(filename.split('_')[0] / 1000) >= tsYesterday);
+
+//   console.log('Total Files Last 24h:', filenamesLast24h.length);
+//   filenamesLast24h.forEach(filename => {
+//     console.log(new Date(Number(filename)).toISOString())
+//   })
+// }
+
 setInterval(() => {
   //console.log(alertSignals.getAlerts())
   alertSignals.addMessagesAlert();
@@ -117,4 +137,5 @@ switch (process.argv[2]?.toUpperCase()) {
     doRun();
 }
 
+//doSummary()
 //getTopCoinmarketcap();

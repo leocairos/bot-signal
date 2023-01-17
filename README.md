@@ -95,6 +95,13 @@ sudo apt-get install -y gconf-service libasound2 libatk1.0-0 libatk-bridge2.0-0 
 sudo apt-get install -y libgbm-dev
 ```
 
+## Tips
+
+* To transfer files from remote server to local server
+```shell
+scp -P 2220 user@domain:/home/app/bot-signal/alerts/*.json .
+```
+
 ## 📄 License
 
 Code released under the [MIT License](./LICENSE).
