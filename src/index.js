@@ -6,6 +6,12 @@ const Exchange = require("./exchange");
 const AlertSignal = require("./AlertSignal");
 const TelegramMessage = require("./telegram");
 
+const { Telegraf } = require('telegraf')
+
+const BOT_TOKEN = process.env.BOT_TOKEN;
+const CHAT_ID = process.env.CHAT_ID;
+
+
 const { startMonitor, RSI_LIMITS, MFI_LIMITS, startMonitorTicker } = require("./monitor");
 const { compactNumber, getTopCoinmarketcap } = require("./util");
 
@@ -102,6 +108,21 @@ async function doRun(isFuture = false) {
       onlyFutures.forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
   })
 
+  activeBotCommand();
+}
+
+function activeBotCommand() {
+  const botCommands = new Telegraf(BOT_TOKEN)
+
+  botCommands.command('status', (ctx) => {
+    let telegramMessage = ''
+    msgLogStart.forEach(async message => telegramMessage += message + '\n');
+    ctx.reply(
+      telegramMessage,
+      { parse_mode: 'html', disable_web_page_preview: true })
+  })
+
+  botCommands.launch()
 }
 
 // async function doSummary() {
