@@ -113,20 +113,6 @@ async function doRun(isFuture = false) {
 function activeBotCommand() {
   const botCommands = new Telegraf(BOT_TOKEN)
 
-  botCommands.on('text', async (ctx) => {
-    let telegramMessage =
-      `Hi, how can I help you? 
-    
-    Please send any command from this list:
-     - /status to receive my last start log
-     - /summary to receive a summary of the last 30 days and 24 hours`;
-
-    await ctx.reply(
-      telegramMessage,
-      { parse_mode: 'html', disable_web_page_preview: true }
-    );
-  });
-
   botCommands.command('status', (ctx) => {
     let telegramMessage = ''
     msgLogStart.forEach(async message => telegramMessage += message + '\n');
@@ -141,6 +127,20 @@ function activeBotCommand() {
       telegramMessage,
       { parse_mode: 'html', disable_web_page_preview: true })
   })
+
+  botCommands.on('text', async (ctx) => {
+    let telegramMessage =
+      `Hi, how can I help you? 
+    
+    Please send any command from this list:
+     - /status to receive my last start log
+     - /summary to receive a summary of the last 30 days and 24 hours`;
+
+    await ctx.reply(
+      telegramMessage,
+      { parse_mode: 'html', disable_web_page_preview: true }
+    );
+  });
 
   botCommands.launch()
 }
