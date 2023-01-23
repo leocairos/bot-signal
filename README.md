@@ -74,6 +74,12 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [ ] Fix/Prevent telegram errors: 
   - [ ] Error: 400: Bad Request: message is too long
   - [ ] Error: 429: Too Many Requests: retry after 5
+- [X] Bot receive texts and commands
+  - [X] Receive any text and reply with available commands
+  - [X] Receive commands
+    - [X] /status to show last start log
+    - [X] /summary to show last 30 days and 24 hours alerts
+    - [ ] / 
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
   - [ ] Sort Alerts by Quote Volume last 24h
