@@ -116,8 +116,7 @@ function activeBotCommand() {
   botCommands.hears(/summary\s?(.*)/i, async (ctx) => {
     const [period, symbol] = (ctx.match[1] || '24h_*').split('_');
 
-    let telegramMessage = await doSummary(symbol.includes(QUOTE) ? symbol : '*',
-      ['24h', '7d', '30d'].includes(period) ? period : '24h');
+    let telegramMessage = await doSummary(symbol, period);
     ctx.reply(
       telegramMessage,
       { parse_mode: 'html', disable_web_page_preview: true })
@@ -155,48 +154,33 @@ function activeBotCommand() {
   botCommands.launch()
 }
 
-async function doSummary(symbol = '*', period = '24h') {
+async function doSummary(symbolInfo = '*', periodInfo = '24h') {
   let msgReturn = ''
   let tsNow = new Date().getTime();
-  let tsLast24h = tsNow - (24 * 3600 * 1000);
-  let tsLast30d = tsNow - (30 * 24 * 3600 * 1000);
+  const symbol = symbolInfo.includes(QUOTE) ? symbolInfo : '*';
+  const period = ['24h', '7d', '30d'].includes(periodInfo) ? periodInfo : '24h';
+  const tsLastPeriod =
+    period === '30d'
+      ? tsNow - (30 * 24 * 3600 * 1000)
+      : period === '7d'
+        ? tsNow - (7 * 24 * 3600 * 1000)
+        : tsNow - (1 * 24 * 3600 * 1000)
 
   const filenames = fs.readdirSync('alerts');
 
-  // console.log('tsNow:', tsNow, new Date(tsNow).toISOString());
-  // console.log('tsLast24h:', tsLast24h, new Date(tsLast24h).toISOString());
-  // console.log('tsLast30d:', tsLast30d, new Date(tsLast30d).toISOString());
-  // console.log('Total Files:', filenames.length);
+  const filenamesLastPeriod = [...filenames]
+    .filter(filename => filename.split('_')[0] >= tsLastPeriod);
 
-  const filenamesLast24h = [...filenames]
-    .filter(filename => filename.split('_')[0] >= tsLast24h);
+  msgReturn += `Total alerts last ${period}: ${filenamesLastPeriod.length}\n`;
 
-  const filenamesLast30d = [...filenames]
-    .filter(filename => filename.split('_')[0] >= tsLast30d);
-
-  msgReturn += `Total alerts last 24h: ${filenamesLast24h.length}\n`;
-  msgReturn += `Total alerts last 30d: ${filenamesLast30d.length}\n`;
-  // console.log('Total alerts last 24h:', filenamesLast24h.length);
-  // console.log('Total alerts last 30d:', filenamesLast30d.length);
-
-  // filenamesLast24h.forEach(filename => {
-  //   console.log(new Date(Number(filename.split('_')[0])).toISOString())
-  // })
-
-  const alerts30d = []
-  filenamesLast30d.forEach(filename => {
-    //console.log(new Date(Number(filename.split('_')[0])).toISOString())
-    //console.log(new Date(Number(filename.split('_')[0])).toISOString())
+  const periodAlerts = []
+  filenamesLastPeriod.forEach(filename => {
     let rawData = fs.readFileSync(`./alerts/${filename}`);
     let alert = JSON.parse(rawData);
-
-    alerts30d.push(...alert)
-    //console.log(...alert);
+    periodAlerts.push(...alert)
   })
 
-  //return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
-
-  const symbolAlerts = [...alerts30d]
+  const symbolAlerts = [...periodAlerts]
     .filter(alert =>
       symbol === '*'
         ? true
@@ -210,14 +194,10 @@ async function doSummary(symbol = '*', period = '24h') {
       return group;
     }, {});
 
-  //console.log('alerts30d:', alerts30d);
-  msgReturn += `Total Alerts to symbol [${symbol}] Last 30d: ${symbolAlerts.length}\n`;
-  //console.log(`Total Alerts to symbol [${symbol}] Last 30d:`, symbolAlerts.length);
-  //console.log('symbolAlertsByIntervals:', symbolAlertsByIntervals);
+  msgReturn += `Total Alerts to symbol [${symbol}] Last ${period}: ${symbolAlerts.length}\n`;
 
   [...INTERVALS].forEach(interval => {
     msgReturn += ` - Interval[${interval}] ${symbolAlertsByIntervals[interval]?.length || 0}\n`;
-    //console.log(` - Interval[${interval}]`, symbolAlertsByIntervals[interval]?.length || 0)
   })
   console.log(msgReturn);
   return msgReturn;
@@ -239,5 +219,5 @@ switch (process.argv[2]?.toUpperCase()) {
 }
 
 //doSummary('ETHUSDT')
-//doSummary()
+//doSummary('BTCUSDT', '1w')
 //getTopCoinmarketcap();
