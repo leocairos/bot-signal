@@ -111,7 +111,13 @@ async function doRun(isFuture = false) {
 }
 
 function activeBotCommand() {
-  const botCommands = new Telegraf(BOT_TOKEN)
+  const botCommands = new Telegraf(BOT_TOKEN);
+
+  botCommands.hears(/resume\s?(.*)/i, (ctx) => {
+    ctx.reply(
+      JSON.stringify(ctx.match),
+      { parse_mode: 'html', disable_web_page_preview: true })
+  })
 
   botCommands.command('status', (ctx) => {
     let telegramMessage = ''
@@ -129,12 +135,15 @@ function activeBotCommand() {
   })
 
   botCommands.on('text', async (ctx) => {
-    let telegramMessage =
-      `Hi, how can I help you? 
-    
-    Please send any command from this list:
-     - /status to receive my last start log
-     - /summary to receive a summary of the last 30 days and 24 hours`;
+    let telegramMessage = 'Hi, how can I help you? \n\n';
+    telegramMessage += 'Please send any command from this list:\n';
+    telegramMessage += ' - /status to receive my last start log';
+    telegramMessage += ' - /summary24h to receive a summary of the last 24 hours';
+    telegramMessage += ' - /summary7d to receive a summary of the last 7 days';
+    telegramMessage += ' - /summary30d to receive a summary of the last 30 days';
+    telegramMessage += ' - /top10alerts24h to receive a summary of the top 10 alerts last 24 hours';
+    telegramMessage += ' - /top10alerts7d to receive a summary of the top 10 alerts last 7 days';
+    telegramMessage += ' - /top10alerts30d to receive a summary of the top 10 alerts last 30 days';
 
     await ctx.reply(
       telegramMessage,
@@ -145,7 +154,7 @@ function activeBotCommand() {
   botCommands.launch()
 }
 
-async function doSummary(symbol = '*') {
+async function doSummary(symbol = '*', period = '24h') {
   let msgReturn = ''
   let tsNow = new Date().getTime();
   let tsLast24h = tsNow - (24 * 3600 * 1000);

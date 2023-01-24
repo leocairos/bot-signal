@@ -79,7 +79,7 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [X] Receive commands
     - [X] /status to show last start log
     - [X] /summary to show last 30 days and 24 hours alerts
-    - [ ] / 
+    - [ ] /top10 
 - [ ] Summary Alerts
   - [X] One message every X time (.env SEND_ALERT_INTERVAL)
   - [ ] Sort Alerts by Quote Volume last 24h
