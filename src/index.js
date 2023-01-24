@@ -171,7 +171,7 @@ async function doSummary(symbolInfo = '*', periodInfo = '24h') {
   const filenamesLastPeriod = [...filenames]
     .filter(filename => filename.split('_')[0] >= tsLastPeriod);
 
-  msgReturn += `Total alerts last ${period}: ${filenamesLastPeriod.length}\n`;
+  msgReturn += `${filenamesLastPeriod.length} alert(s) were sent in the last ${period}.\n`;
 
   const periodAlerts = []
   filenamesLastPeriod.forEach(filename => {
@@ -194,10 +194,10 @@ async function doSummary(symbolInfo = '*', periodInfo = '24h') {
       return group;
     }, {});
 
-  msgReturn += `Total Alerts to symbol [${symbol}] Last ${period}: ${symbolAlerts.length}\n`;
+  msgReturn += `There were ${symbolAlerts.length} alert(s) for the ${symbol} symbol in the last ${period}:\n`;
 
   [...INTERVALS].forEach(interval => {
-    msgReturn += ` - Interval[${interval}] ${symbolAlertsByIntervals[interval]?.length || 0}\n`;
+    msgReturn += ` - Time frame ${interval}: ${symbolAlertsByIntervals[interval]?.length || 0} alert(s)\n`;
   })
   console.log(msgReturn);
   return msgReturn;
