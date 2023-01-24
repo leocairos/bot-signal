@@ -113,19 +113,10 @@ async function doRun(isFuture = false) {
 function activeBotCommand() {
   const botCommands = new Telegraf(BOT_TOKEN);
 
-  botCommands.hears(/^\/resume (\w+) (.+)$/, (ctx) => {
-    const period = ctx.match[1] || '24h'
-    const symbol = ctx.match[2] || '*'
-
-    ctx.reply(
-      `${JSON.stringify(ctx.match)} ${period} | ${symbol}`,
-      { parse_mode: 'html', disable_web_page_preview: true })
-  })
-
   botCommands.hears(/summary\s?(.*)/i, async (ctx) => {
-    const period = ctx.match[1] || '24h';
+    const [period, symbol] = (ctx.match[1] || '24h_*').split('_');
 
-    let telegramMessage = await doSummary('*',
+    let telegramMessage = await doSummary(symbol.includes(QUOTE) ? symbol : '*',
       ['24h', '7d', '30d'].includes(period) ? period : '24h');
     ctx.reply(
       telegramMessage,
@@ -151,9 +142,9 @@ function activeBotCommand() {
     let telegramMessage = 'Hi, how can I help you? \n\n';
     telegramMessage += 'Please send any command from this list:\n';
     telegramMessage += ' - <b>/status</b> to receive my last start log\n';
-    telegramMessage += ' - <b>/summary</b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the last periods\n';
-    telegramMessage += ' - <b>/top10alerts<b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the top 10 alerts last periods\n';
-    telegramMessage += ' - <b>/top10volume<b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the top 10 volume quote last periods\n';
+    telegramMessage += ' - <b>/summary</b> [<b>24h</b>,7d,30]_[symbol] to receive a summary of the last periods\n';
+    telegramMessage += ' - <b>/top10alerts<b> [<b>24h</b>,7d,30]_[symbol] to receive a summary of the top 10 alerts last periods\n';
+    telegramMessage += ' - <b>/top10volume<b> [<b>24h</b>,7d,30]_[symbol] to receive a summary of the top 10 volume quote last periods\n';
 
     await ctx.reply(
       telegramMessage,
