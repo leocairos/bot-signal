@@ -113,9 +113,22 @@ async function doRun(isFuture = false) {
 function activeBotCommand() {
   const botCommands = new Telegraf(BOT_TOKEN);
 
-  botCommands.hears(/resume\s?(.*)/i, (ctx) => {
+  botCommands.hears(/^\/resume (\w+) (.+)$/, (ctx) => {
+    const period = ctx.match[1] || '24h'
+    const symbol = ctx.match[2] || '*'
+
     ctx.reply(
-      JSON.stringify(ctx.match),
+      `${JSON.stringify(ctx.match)} ${period} | ${symbol}`,
+      { parse_mode: 'html', disable_web_page_preview: true })
+  })
+
+  botCommands.hears(/summary\s?(.*)/i, async (ctx) => {
+    const period = ctx.match[1] || '24h';
+
+    let telegramMessage = await doSummary('*',
+      ['24h', '7d', '30d'].includes(period) ? period : '24h');
+    ctx.reply(
+      telegramMessage,
       { parse_mode: 'html', disable_web_page_preview: true })
   })
 
@@ -127,23 +140,20 @@ function activeBotCommand() {
       { parse_mode: 'html', disable_web_page_preview: true })
   })
 
-  botCommands.command('summary', async (ctx) => {
-    let telegramMessage = await doSummary();
-    ctx.reply(
-      telegramMessage,
-      { parse_mode: 'html', disable_web_page_preview: true })
-  })
+  // botCommands.command('summary', async (ctx) => {
+  //   let telegramMessage = await doSummary();
+  //   ctx.reply(
+  //     telegramMessage,
+  //     { parse_mode: 'html', disable_web_page_preview: true })
+  // })
 
   botCommands.on('text', async (ctx) => {
     let telegramMessage = 'Hi, how can I help you? \n\n';
     telegramMessage += 'Please send any command from this list:\n';
-    telegramMessage += ' - /status to receive my last start log';
-    telegramMessage += ' - /summary24h to receive a summary of the last 24 hours';
-    telegramMessage += ' - /summary7d to receive a summary of the last 7 days';
-    telegramMessage += ' - /summary30d to receive a summary of the last 30 days';
-    telegramMessage += ' - /top10alerts24h to receive a summary of the top 10 alerts last 24 hours';
-    telegramMessage += ' - /top10alerts7d to receive a summary of the top 10 alerts last 7 days';
-    telegramMessage += ' - /top10alerts30d to receive a summary of the top 10 alerts last 30 days';
+    telegramMessage += ' - <b>/status</b> to receive my last start log\n';
+    telegramMessage += ' - <b>/summary</b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the last periods\n';
+    telegramMessage += ' - <b>/top10alerts<b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the top 10 alerts last periods\n';
+    telegramMessage += ' - <b>/top10volume<b> [<b>24h</b>,7d,30] [symbol] to receive a summary of the top 10 volume quote last periods\n';
 
     await ctx.reply(
       telegramMessage,
