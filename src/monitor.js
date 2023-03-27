@@ -47,6 +47,9 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
   let msg = `${symbol}_${interval} RSI: ${rsi.current}, MFI: ${mfi.current}`
 
   if (isOkToProcess) {
+    let isLongGalileia = (ohlc.close < ema9.previous) && (ohlc.close > ema9.current);
+    let isShortGalileia = (ohlc.close > ema9.previous) && (ohlc.close < ema9.current);
+
     let overSold = (rsi.current <= RSI_LIMITS[0] && mfi.current <= MFI_LIMITS[0])
     let overBought = (rsi.current >= RSI_LIMITS[1] && mfi.current >= MFI_LIMITS[1])
     if (USE_INVERSE_CONDITIONS === true) {
@@ -54,11 +57,18 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
       overBought = overBought && (rsi.previous < RSI_LIMITS[1] && mfi.previous < MFI_LIMITS[1])
     }
 
-    if (overSold == true) {
-      msg = `${symbol}_${interval} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`;
-    } else if (overBought == true) {
-      msg = `${symbol}_${interval} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`;
+    if (isLongGalileia == true) {
+      msg += `${symbol}_${interval} possible LONG by Galileia (EMA9: ${ema9.current})`;
+    } else if (isShortGalileia == true) {
+      msg += `${symbol}_${interval} possible SHORT by Galileia (EMA9: ${ema9.current})`;
     }
+
+    if (overSold == true) {
+      msg += `\n${symbol}_${interval} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`;
+    } else if (overBought == true) {
+      msg += `\n${symbol}_${interval} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`;
+    }
+
     msg += `, OHLC: [${txtOHLC}]`
 
     if (!isProductionEnv) console.log(msg)
@@ -86,16 +96,21 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     //console.log(msg)
 
-    if (overSold == true || overBought == true) {
+    if (overSold == true || overBought == true || isLongGalileia == true || isShortGalileia == true) {
       const signal = overSold ? 'overSold' : 'overBought';
+      const signalGalileia = isLongGalileia ? 'LongGalileia' : isShortGalileia ? 'ShortGalileia' : '';
       const ticker = ticker24h[symbol];
       const quoteVolume = parseFloat(ticker?.quoteVolume) || 0;
       const percentChange = parseFloat(ticker?.percentChange) || 0;
       const isQuoteAlert = quoteVolume === 0 || quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
       const isPercentAlert = Math.abs(percentChange) === 0 || Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT
       const isTopSymbol = alertSignals.isTopSymbol(symbol);
-      if ((isQuoteAlert && isPercentAlert) || isTopSymbol)
-        alertSignals.insert({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
+      if ((isQuoteAlert && isPercentAlert) || isTopSymbol) {
+        if (overSold == true || overBought == true)
+          alertSignals.insert({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
+        if (isLongGalileia == true || isShortGalileia == true)
+          alertSignals.insert({ symbol, ticker, interval, signalGalileia, rsi, mfi, ohlc, ema9, ema100 });
+      }
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);
       // console.log(formattedAlert)

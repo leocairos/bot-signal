@@ -90,12 +90,14 @@ module.exports = class AlertSignal {
 
   async addMessage(alerts) {
     //console.log(alerts)
-    const alertsBuy = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERSOLD');
-    const alertsSell = [...alerts].filter(a => a.signal.toUpperCase() === 'OVERBOUGHT');
+    const alertsBuy = [...alerts]
+      .filter(a => a.signal.toUpperCase() === 'OVERSOLD' || a.signal.toUpperCase() === 'LONGGALILEIA');
+    const alertsSell = [...alerts]
+      .filter(a => a.signal.toUpperCase() === 'OVERBOUGHT' || a.signal.toUpperCase() === 'SHORTGALILEIA');
 
     let telegramMessage = ''
     if (alertsBuy.length > 0 || alertsSell.length > 0) {
-      telegramMessage += 'STRATEGY: Scalp Agiota by H7\n'
+      telegramMessage += 'STRATEGY: by H7\n'
       telegramMessage += `   at ${new Date().toISOString()}\n\n`
     }
 
