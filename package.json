@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon --watch src ./src/index.js",
-    "start": "node ./src/index.js",
+    "dev": "nodemon --trace-warnings --watch src ./src/index.js",
+    "start": "node --trace-warnings ./src/index.js",
     "start-only-futures": "node ./src/index.js only-futures"
   },
   "keywords": [],
