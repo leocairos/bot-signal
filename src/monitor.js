@@ -101,7 +101,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
 
     if (overSold == true || overBought == true || isLongGalileia == true || isShortGalileia == true) {
       const signal = overSold ? 'overSold' : 'overBought';
-      const signalGalileia = isLongGalileia ? 'LongGalileia' : isShortGalileia ? 'ShortGalileia' : '';
+      const signalGalileia = isLongGalileia ? 'LongGalileia' : isShortGalileia ? 'ShortGalileia' : '-';
       const ticker = ticker24h[symbol];
       const quoteVolume = parseFloat(ticker?.quoteVolume) || 0;
       const percentChange = parseFloat(ticker?.percentChange) || 0;
