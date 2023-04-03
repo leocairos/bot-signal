@@ -114,15 +114,25 @@ async function doRun(isFuture = false) {
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
   doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
 
+  const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
+
+  const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s));
+  const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s));
+
+  doLogStartMsg(`\nCoinPairs vs CMC : `)
+  doLogStartMsg(`  * Spot Market [${spotVsCMC.length}]: ${spotVsCMC}`);
+  doLogStartMsg(`  * Futures Market [${futuresVsCMC.length}]: ${futuresVsCMC}`);
+
   doSendStartLog();
 
   startMonitorTicker(exchange);
-  const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
+
+
   INTERVALS.forEach(interval => {
     if (!isFuture)
-      spotSymbols.filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
+      [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
     else
-      onlyFutures.filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
+      [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
   })
 
   activeBotCommand();
