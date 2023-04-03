@@ -109,11 +109,11 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
       const isPercentAlert = Math.abs(percentChange) === 0 || Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT
       const isTopSymbol = alertSignals.isTopSymbol(symbol);
       if ((isQuoteAlert && isPercentAlert) || isTopSymbol) {
-        console.log('signal', signal, 'signalGalileia', signalGalileia)
+        //console.log('signal', signal, 'signalGalileia', signalGalileia)
         if (overSold == true || overBought == true)
           alertSignals.insert({ symbol, ticker, interval, signal, rsi, mfi, ohlc, ema9, ema100 });
         if (isLongGalileia == true || isShortGalileia == true)
-          alertSignals.insert({ symbol, ticker, interval, signalGalileia, rsi, mfi, ohlc, ema9, ema100 });
+          alertSignals.insert({ symbol, ticker, interval, signal: signalGalileia, rsi, mfi, ohlc, ema9, ema100 });
       }
       //const formattedAlert = htmlAlertFormatted(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100, ema200, fib, sma, macd);
       //const formattedAlert = htmlAlertSummary(symbol, interval, signal, rsi, mfi, ohlc, ema14, ema100);
