@@ -21,6 +21,9 @@ const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["1
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
 
+const MINIMUM_VOLUME_USD = process.env.MINIMUM_VOLUME_USD || 30000000; //30Mi
+const MINIMUM_MARKETCAP = process.env.MINIMUM_MARKETCAP || 500000000; //500Mi
+
 const alertSignals = new AlertSignal();
 const telegramStartMessages = new TelegramMessage();
 
@@ -70,7 +73,15 @@ async function doRun(isFuture = false) {
 
   const futuresSymbols = await getFutureSymbols(exchange);
 
-  const [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+  //const [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+  let topSymbols, cmSymbols;
+  try {
+    [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+  } catch {
+    setTimeout(async () => {
+      [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+    }, 2000)
+  }
 
   alertSignals.updateSymbols(spotSymbols, futuresSymbols, topSymbols, cmSymbols);
   const bothSymbols = futuresSymbols.filter(x => spotSymbols.includes(x));
@@ -98,6 +109,11 @@ async function doRun(isFuture = false) {
   const topSymbolsBase = [...topSymbols].map(s => s.symbol + ' ')
 
   doLogStartMsg(`Always alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+
+  doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
+  doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
+  doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
+
   doSendStartLog();
 
   startMonitorTicker(exchange);

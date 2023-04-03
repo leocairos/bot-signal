@@ -8,6 +8,9 @@ const pageHeight = 460;
 const TOP_X_TO_FAVORITE = process.env.TOP_X_TO_FAVORITE || 20;
 const CMC_PRO_API_KEY = process.env.CMC_PRO_API_KEY;
 
+const MINIMUM_VOLUME_USD = process.env.MINIMUM_VOLUME_USD || 30000000; //30Mi
+const MINIMUM_MARKETCAP = process.env.MINIMUM_MARKETCAP || 500000000; //500Mi
+
 function intervalHTMLConvert(interval) {
   switch (interval) {
     case '1m': return "1";
@@ -182,7 +185,7 @@ const removeFile = (pathToFile) =>
 
 async function getTopCoinmarketcap() {
   const api = axios.create({
-    baseURL: 'https://pro-api.coinmarketcap.com'
+    baseURL: 'https://pro-api.coinmarketcap.com/v1'
   });
 
   api.interceptors.request.use(async (config) => {
@@ -190,7 +193,11 @@ async function getTopCoinmarketcap() {
     return config;
   })
 
-  const result = await api.get('/v1/cryptocurrency/listings/latest?sort=market_cap&limit=5000');
+  const urlFilter = `volume_24h_min=${MINIMUM_VOLUME_USD}&market_cap_min=${MINIMUM_MARKETCAP}&limit=${5000}`
+  const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&${urlFilter}`;
+  //console.log(urlCMC)
+  const result = await api.get(urlCMC);
+
   const cmSymbols = result.data.data.map(item => (
     {
       id: item.id,
