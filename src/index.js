@@ -97,7 +97,7 @@ async function doRun(isFuture = false) {
 
   doLogStartMsg(`Alerts every ${SEND_ALERT_INTERVAL}s for this Strategies:`)
   doLogStartMsg(` - Scalp H7: RSI (${RSI_LIMITS}) x MFI (${MFI_LIMITS}).`)
-  doLogStartMsg(` - Galileia H7: EMA9.\n`)
+  doLogStartMsg(` - Galileia H7: EMA_9 vs Close.\n`)
 
   if (MINIMUM_QUOTE_VOLUME_ALERT !== 0 || MINIMUM_PERCENT_CHANGE_ALERT !== 0) {
     doLogStartMsg(`Alerts only when (by last 24h): `)
