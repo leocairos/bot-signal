@@ -117,11 +117,12 @@ async function doRun(isFuture = false) {
   doSendStartLog();
 
   startMonitorTicker(exchange);
+  const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
   INTERVALS.forEach(interval => {
     if (!isFuture)
-      spotSymbols.forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
+      spotSymbols.filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
     else
-      onlyFutures.forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
+      onlyFutures.filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
   })
 
   activeBotCommand();
