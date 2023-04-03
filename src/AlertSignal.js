@@ -72,7 +72,7 @@ module.exports = class AlertSignal {
     // const key = `${ohlc.lastTimeStamp}_${symbol}_${interval}`;
     const alert = { symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100 };
     // this.ALERTS[`${key}`] = alert;
-    // console.log(this.ALERTS);
+    console.log(symbol, interval, signal, rsi, mfi, ohlc, ema9, ema100);
     const currentAlerts = [...(this.ALERTS)]
     const exists = currentAlerts
       .find(a => a.ohlc.lastTimeStamp === ohlc.lastTimeStamp &&
