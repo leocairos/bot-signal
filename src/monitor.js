@@ -47,8 +47,11 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
   let msg = `${symbol}_${interval} RSI: ${rsi.current}, MFI: ${mfi.current}`
 
   if (isOkToProcess) {
-    let isLongGalileia = (ohlc.close < ema9.previous) && (ohlc.close > ema9.current);
-    let isShortGalileia = (ohlc.close > ema9.previous) && (ohlc.close < ema9.current);
+    const ohlcCloseC = ohlc.close[ohlc.close.length - 1]
+    const ohlcCloseP = ohlc.close[ohlc.close.length - 2]
+    //console.log('ohlcCloseC', ohlcCloseC, 'ohlcCloseP', ohlcCloseP)
+    let isLongGalileia = (ohlcCloseC > ema9.current) && (ohlcCloseP < ema9.current);
+    let isShortGalileia = (ohlcCloseC < ema9.current) && (ohlcCloseP > ema9.current);
 
     let overSold = (rsi.current <= RSI_LIMITS[0] && mfi.current <= MFI_LIMITS[0])
     let overBought = (rsi.current >= RSI_LIMITS[1] && mfi.current >= MFI_LIMITS[1])
