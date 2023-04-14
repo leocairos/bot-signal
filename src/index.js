@@ -9,14 +9,13 @@ const TelegramMessage = require("./telegram");
 const { Telegraf } = require('telegraf')
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
-const CHAT_ID = process.env.CHAT_ID;
 
 const { startMonitor, RSI_LIMITS, MFI_LIMITS, startMonitorTicker } = require("./monitor");
 const { compactNumber, getTopCoinmarketcap } = require("./util");
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL;
 const ALERT_ONLY_FUTURES = process.env.ALERT_ONLY_FUTURES;
-const QUOTE = `${process.env.QUOTE}`;
+const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
@@ -32,7 +31,8 @@ const msgLogStart = [];
 async function getSpotSymbols(exchange) {
   const spotSymbols = await exchange.exchangeInfo();
   const spotFilteredSymbols = [...spotSymbols.symbols]
-    .filter(s => s.quoteAsset === QUOTE &&
+    //.filter(s => s.quoteAsset === QUOTE &&
+    .filter(s => [...QUOTES].includes(s.quoteAsset) &&
       s.status === "TRADING" &&
       s.isSpotTradingAllowed === true)
     .map(s => s.symbol);
@@ -43,7 +43,8 @@ async function getFutureSymbols(exchange) {
   const futuresSymbols = await exchange.futuresExchangeInfo();
   if (!futuresSymbols.symbols) console.log(JSON.stringify(futuresSymbols))
   const futuresFilteredSymbols = futuresSymbols.symbols
-    ?.filter(s => s.quoteAsset === QUOTE &&
+    //?.filter(s => s.quoteAsset === QUOTE &&
+    ?.filter(s => [...QUOTES].includes(s.quoteAsset) &&
       s.status === "TRADING")
     .map(s => s.symbol)
   return futuresFilteredSymbols || [''];
@@ -87,7 +88,7 @@ async function doRun(isFuture = false) {
   const bothSymbols = futuresSymbols.filter(x => spotSymbols.includes(x));
   const onlyFutures = futuresSymbols.filter(x => !spotSymbols.includes(x));
 
-  doLogStartMsg(`Monitoring all available symbols [${INTERVALS}] with quote asset "${QUOTE}":`);
+  doLogStartMsg(`Monitoring all available symbols [${INTERVALS}] with quotes asset [${QUOTES}]:`);
   if (!isFuture)
     doLogStartMsg(` - ${spotSymbols.length} spot symbols.\n - ${bothSymbols.length} futures symbols.\n`)
   else
@@ -114,7 +115,16 @@ async function doRun(isFuture = false) {
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
   doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
 
-  const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
+  //const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
+  //const cmcSymbolQUOTE = cmSymbols.map(c => [...QUOTES].map(quote => `${c.symbol}${quote}`))
+  const cmcSymbolQUOTE = [];
+
+  for (const s of cmSymbols) {
+    for (const q of [...QUOTES]) {
+      cmcSymbolQUOTE.push(`${s.symbol}${q}`)
+    }
+  }
+  console.log(cmcSymbolQUOTE)
 
   const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s));
   const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s));
@@ -185,7 +195,14 @@ function activeBotCommand() {
 async function doSummary(symbolInfo = '*', periodInfo = '24h') {
   let msgReturn = ''
   let tsNow = new Date().getTime();
-  const symbol = symbolInfo.includes(QUOTE) ? symbolInfo : '*';
+  //const symbol = symbolInfo.includes(QUOTE) ? symbolInfo : '*';
+
+  let symbol = '*';
+  for (const quote of [...QUOTES]) {
+    symbol = symbolInfo.includes(quote) ? symbolInfo : '*';
+    if (symbol !== '*') break
+  }
+
   const period = ['24h', '7d', '30d'].includes(periodInfo) ? periodInfo : '24h';
   const tsLastPeriod =
     period === '30d'

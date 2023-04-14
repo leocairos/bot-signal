@@ -3,7 +3,7 @@ const TelegramMessage = require("./telegram");
 
 const fs = require('fs');
 const path = require('path');
-const QUOTE = `${process.env.QUOTE}`;
+const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
 
 const isProductionEnv = process.env.NODE_ENV === 'production';
 
@@ -48,12 +48,24 @@ module.exports = class AlertSignal {
   }
 
   isTopSymbol(symbol) {
-    return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
+    //const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
+    //let isTop = false;
+    for (const quote of [...QUOTES]) {
+      if (this.TOP_SYMBOLS_BASE.includes(symbol.replace(quote, '')) === true)
+        return true;
+    }
+
+    return false;
+    //return this.TOP_SYMBOLS_BASE.includes(symbol.replace(QUOTE, ''));
   }
 
   getCmSymbol(symbol) {
     const cmSymbols = [...this.CM_SYMBOLS_BASE];
-    const baseAsset = symbol.replace(QUOTE, '');
+    let baseAsset;
+    for (const quote of [...QUOTES]) {
+      baseAsset = symbol.replace(quote, '');
+    }
+    //const baseAsset = symbol.replace(QUOTE, '').replace;
     const cmSymbol = cmSymbols.find(s => s.symbol === baseAsset);
     return cmSymbol;
   }
