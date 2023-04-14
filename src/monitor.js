@@ -108,6 +108,7 @@ const doProcess = (alertSignals, symbol, interval, ohlc) => {
       const isQuoteAlert = quoteVolume === 0 || quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
       const isPercentAlert = Math.abs(percentChange) === 0 || Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT
       const isTopSymbol = alertSignals.isTopSymbol(symbol);
+      console.log('doProcess', symbol, 'isTop', isTopSymbol)
       if ((isQuoteAlert && isPercentAlert) || isTopSymbol) {
         //console.log('signal', signal, 'signalGalileia', signalGalileia)
         if (overSold == true || overBought == true)

@@ -122,7 +122,6 @@ async function doRun(isFuture = false) {
       cmcSymbolQUOTE.push(`${s.symbol}${q}`)
     }
   }
-  console.log(cmcSymbolQUOTE)
 
   const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s)).sort();
   const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s)).sort();

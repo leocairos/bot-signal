@@ -50,8 +50,10 @@ module.exports = class AlertSignal {
   isTopSymbol(symbol) {
     //const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
     //let isTop = false;
+    const topSymbols = [...this.TOP_SYMBOLS_BASE].map(ts => ts.symbol);
     for (const quote of [...QUOTES]) {
-      if (this.TOP_SYMBOLS_BASE.includes(symbol.replace(quote, '')) === true)
+      //console.log('isTop', symbol, quote, topSymbols.includes(symbol.replace(quote, '')) === true)
+      if (topSymbols.includes(symbol.replace(quote, '')) === true)
         return true;
     }
 
@@ -67,6 +69,7 @@ module.exports = class AlertSignal {
     }
     //const baseAsset = symbol.replace(QUOTE, '').replace;
     const cmSymbol = cmSymbols.find(s => s.symbol === baseAsset);
+    //console.log('getCmSymbol', symbol, cmSymbol)
     return cmSymbol;
   }
 

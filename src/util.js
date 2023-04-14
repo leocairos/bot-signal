@@ -150,7 +150,8 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
   const lastVolume = formatNumber(ohlc.volume[ohlc.volume.length - 1]);
   const ema9C = formatNumber(ema9.current);
   const ema100C = formatNumber(ema100.current);
-  const symbolSuffix = marketType.includes('F') ? 'PERP' : '';
+  //const symbolSuffix = marketType.includes('F') ? 'PERP' : '';
+  const symbolSuffix = '';
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
   //const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
   const url2 = `https://coinmarketcap.com/currencies/${cmSymbol.slug}/`;
