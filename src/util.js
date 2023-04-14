@@ -154,7 +154,7 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
   const symbolSuffix = '';
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
   //const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
-  const url2 = `https://coinmarketcap.com/currencies/${cmSymbol.slug}/`;
+  const url2 = `https://coinmarketcap.com/currencies/${cmSymbol?.slug}/`;
   const symbol_link = `<a href="${url2}">${symbol}</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit = ((lastClose / lastOpen) - 1) * 100;
