@@ -115,8 +115,6 @@ async function doRun(isFuture = false) {
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
   doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
 
-  //const cmcSymbolQUOTE = cmSymbols.map(c => `${c.symbol}${QUOTE}`)
-  //const cmcSymbolQUOTE = cmSymbols.map(c => [...QUOTES].map(quote => `${c.symbol}${quote}`))
   const cmcSymbolQUOTE = [];
 
   for (const s of cmSymbols) {
@@ -126,8 +124,8 @@ async function doRun(isFuture = false) {
   }
   console.log(cmcSymbolQUOTE)
 
-  const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s));
-  const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s));
+  const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s)).sort();
+  const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s)).sort();
 
   doLogStartMsg(`\nCoinPairs vs CMC : `)
   doLogStartMsg(`  * Spot Market [${spotVsCMC.length}]: ${spotVsCMC}`);
