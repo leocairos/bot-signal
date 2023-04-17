@@ -194,8 +194,10 @@ async function getTopCoinmarketcap() {
     return config;
   })
 
-  const urlFilter = `volume_24h_min=${MINIMUM_VOLUME_USD}&market_cap_min=${MINIMUM_MARKETCAP}&limit=${5000}`
-  const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&${urlFilter}`;
+  // const urlFilter = `volume_24h_min=${MINIMUM_VOLUME_USD}&market_cap_min=${MINIMUM_MARKETCAP}&limit=${5000}`
+  // const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&${urlFilter}`;
+  // //console.log(urlCMC)
+  const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap`;
   //console.log(urlCMC)
   const result = await api.get(urlCMC);
 
@@ -212,8 +214,10 @@ async function getTopCoinmarketcap() {
       market_cap: item.quote?.USD?.market_cap,
     }
   ))
+  //console.log(cmSymbols.length);
   const topSymbols = [...cmSymbols].filter(s => s.cmc_rank <= TOP_X_TO_FAVORITE);
   //console.log(topSymbols);
+  //console.log(cmSymbols.length);
   return [topSymbols, cmSymbols];
 }
 

@@ -119,7 +119,8 @@ async function doRun(isFuture = false) {
 
   for (const s of cmSymbols) {
     for (const q of [...QUOTES]) {
-      cmcSymbolQUOTE.push(`${s.symbol}${q}`)
+      if (s.usdVolume24h >= MINIMUM_VOLUME_USD && s.market_cap >= MINIMUM_MARKETCAP)
+        cmcSymbolQUOTE.push(`${s.symbol}${q}`)
     }
   }
 

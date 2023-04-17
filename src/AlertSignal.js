@@ -121,7 +121,7 @@ module.exports = class AlertSignal {
       alertsBuy.forEach(a => {
         const mt = this.getMarketType(a.symbol);
         const cmSymbol = this.getCmSymbol(a.symbol);
-        //console.log(cmSymbol);
+        //console.log('BUY SIGNALS', cmSymbol);
         const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100, cmSymbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
@@ -131,7 +131,7 @@ module.exports = class AlertSignal {
       alertsSell.forEach(a => {
         const mt = this.getMarketType(a.symbol);
         const cmSymbol = this.getCmSymbol(a.symbol);
-        //console.log(cmSymbol);
+        //console.log('SELL SIGNALS', cmSymbol);
         const formattedAlert = htmlAlertSummary(mt, a.symbol, a.ticker, a.interval, a.signal, a.rsi, a.mfi, a.ohlc, a.ema9, a.ema100, cmSymbol);
         telegramMessage += `${mt} ${formattedAlert}\n`
       })
