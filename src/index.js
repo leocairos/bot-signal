@@ -111,14 +111,19 @@ async function doRun(isFuture = false) {
       doLogStartMsg(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
   }
   const topSymbolsBase = [...topSymbols].map(s => s.symbol + ' ')
-  const selectedSymbolsBase = [...selectedSymbols].map(s => s.symbol + ' ')
+  const selectedSymbolsBase = [...selectedSymbols]
+    .map(s => s.symbol)
+    .forEach(s => {
+      if (INCLUDED_SYMBOLS.includes(s.symbol)) {
+        if ([...selectedSymbols].findIndex(s2 => s2.symbol === s.symbol) < 0)
+          selectedSymbols.push(s)
+      }
+    })
 
   doLogStartMsg(`Always alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
 
-  doLogStartMsg(`Included symbols ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS}.\n`);
-  doLogStartMsg(`Excluded symbols ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS}.\n`);
-
-  doLogStartMsg(`Selected ${selectedSymbolsBase.length} Symbols to monitor: ${selectedSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
 
   doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
@@ -137,19 +142,31 @@ async function doRun(isFuture = false) {
   const futuresVsCMC = [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s)).sort();
 
   doLogStartMsg(`\nCoinPairs vs CMC : `)
-  doLogStartMsg(`  * Spot Market [${spotVsCMC.length}]: ${spotVsCMC}`);
-  doLogStartMsg(`  * Futures Market [${futuresVsCMC.length}]: ${futuresVsCMC}`);
+  if (spotVsCMC.length > 0)
+    doLogStartMsg(`  * Spot Market [${spotVsCMC.length}]: ${spotVsCMC.toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
+  if (futuresVsCMC.length > 0)
+    doLogStartMsg(`  * Futures Market [${futuresVsCMC.length}]: ${futuresVsCMC.toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
 
   doSendStartLog();
 
   startMonitorTicker(exchange);
 
+  doLogStartMsg(`Selected ${selectedSymbolsBase.length} Symbols to monitor: ${selectedSymbolsBase.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
 
   INTERVALS.forEach(interval => {
     if (!isFuture)
-      [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
+      [...spotSymbols]
+        .filter(s => cmcSymbolQUOTE.includes(s))
+        .forEach(s => console.log(s))
+        .filter(s => selectedSymbolsBase.includes(s.symbol))
+        .forEach(symbol => console.log(symbol, interval))
+    //.forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval))
     else
-      [...onlyFutures].filter(s => cmcSymbolQUOTE.includes(s)).forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
+      [...onlyFutures]
+        .filter(s => cmcSymbolQUOTE.includes(s))
+        .filter(s => selectedSymbolsBase.includes(s.symbol))
+        .forEach(symbol => console.log(symbol, interval))
+    //.forEach(symbol => startMonitor(exchange, alertSignals, symbol, interval, true))
   })
 
   activeBotCommand();
