@@ -23,6 +23,9 @@ const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHAN
 const MINIMUM_VOLUME_USD = process.env.MINIMUM_VOLUME_USD || 30000000; //30Mi
 const MINIMUM_MARKETCAP = process.env.MINIMUM_MARKETCAP || 500000000; //500Mi
 
+const EXCLUDED_SYMBOLS = process.env.EXCLUDED_SYMBOLS ? process.env.EXCLUDED_SYMBOLS.split(',') : [];
+const INCLUDED_SYMBOLS = process.env.INCLUDED_SYMBOLS ? process.env.INCLUDED_SYMBOLS.split(',') : [];
+
 const alertSignals = new AlertSignal();
 const telegramStartMessages = new TelegramMessage();
 
@@ -75,12 +78,12 @@ async function doRun(isFuture = false) {
   const futuresSymbols = await getFutureSymbols(exchange);
 
   //const [topSymbols, cmSymbols] = await getTopCoinmarketcap();
-  let topSymbols, cmSymbols;
+  let topSymbols, cmSymbols, selectedSymbols;
   try {
-    [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+    [topSymbols, cmSymbols, selectedSymbols] = await getTopCoinmarketcap();
   } catch {
     setTimeout(async () => {
-      [topSymbols, cmSymbols] = await getTopCoinmarketcap();
+      [topSymbols, cmSymbols, selectedSymbols] = await getTopCoinmarketcap();
     }, 2000)
   }
 
@@ -110,6 +113,11 @@ async function doRun(isFuture = false) {
   const topSymbolsBase = [...topSymbols].map(s => s.symbol + ' ')
 
   doLogStartMsg(`Always alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+
+  doLogStartMsg(`Included symbols ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Excluded symbols ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+
+  doLogStartMsg(`Selected Symbols ${selectedSymbols.length}: ${selectedSymbols.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
 
   doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);

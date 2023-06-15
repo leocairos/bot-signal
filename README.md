@@ -60,9 +60,6 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [X] Rest
   - [!] Websocket (using same charts of Spot, because values are very near)
 - [X] Suppress logs in production environment
-- [ ] Option to monitor only favorite coins
-  - [ ] ONLY_FAVORITE_S coin in .env (if is empty, monitor all, else, monitor only coins in param)
-  - [ ] ONLY_FAVORITE_F coin in .env (if is empty, monitor all, else, monitor only coins in param)
 - [X] Fix Scalp H7
   - [X] Use RSI and MFI correct params
   - [X] Use EMA 9
@@ -86,6 +83,9 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [ ] Summary Alerts by Strategy
     - [ ] Summary (One message with all alerts by strategy on last time interval)
     - [ ] Top 5 coins on 3 last time interval
+- [ ] Exclude Symbols to monitor by env file (EXCLUDED_SYMBOLS)
+- [ ] Include Symbols to monitor by env file (INCLUDED_SYMBOLS)
+
 
 <br/>
 

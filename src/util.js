@@ -8,8 +8,8 @@ const pageHeight = 460;
 const TOP_X_TO_FAVORITE = process.env.TOP_X_TO_FAVORITE || 20;
 const CMC_PRO_API_KEY = process.env.CMC_PRO_API_KEY;
 
-const MINIMUM_VOLUME_USD = process.env.MINIMUM_VOLUME_USD || 30000000; //30Mi
-const MINIMUM_MARKETCAP = process.env.MINIMUM_MARKETCAP || 500000000; //500Mi
+const EXCLUDED_SYMBOLS = process.env.EXCLUDED_SYMBOLS ? process.env.EXCLUDED_SYMBOLS.split(',') : [];
+const INCLUDED_SYMBOLS = process.env.INCLUDED_SYMBOLS ? process.env.INCLUDED_SYMBOLS.split(',') : [];
 
 function intervalHTMLConvert(interval) {
   switch (interval) {
@@ -155,7 +155,7 @@ function htmlAlertSummary(marketType, symbol, ticker, interval, signal, rsi, mfi
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}${symbolSuffix}`;
   //const url2 = `https://www.tradingview.com/symbols/${symbol}/`;
   const url2 = `https://coinmarketcap.com/currencies/${cmSymbol?.slug}/`;
-  const symbol_link = `<a href="${url2}">${symbol}</a>`
+  const symbol_link = `<a href="${url2}">${symbol}[${cmSymbol?.cmc_rank}]</a>`
   const signal_link = `<a href="${url}">${signal.toUpperCase()}</a>`
   const profit = ((lastClose / lastOpen) - 1) * 100;
   const ema9P = ((ema9.current / lastClose) - 1) * 100;
@@ -215,10 +215,21 @@ async function getTopCoinmarketcap() {
     }
   ))
   //console.log(cmSymbols.length);
+
   const topSymbols = [...cmSymbols].filter(s => s.cmc_rank <= TOP_X_TO_FAVORITE);
+
+  const selectedSymbols = [...topSymbols].filter(s => !EXCLUDED_SYMBOLS.includes(s.symbol));
+
+  [...cmSymbols].forEach(s => {
+    if (INCLUDED_SYMBOLS.includes(s.symbol)) {
+      if ([...selectedSymbols].findIndex(s2 => s2.symbol === s.symbol) < 0)
+        selectedSymbols.push(s)
+    }
+  })
+
   //console.log(topSymbols);
   //console.log(cmSymbols.length);
-  return [topSymbols, cmSymbols];
+  return [topSymbols, cmSymbols, selectedSymbols];
 }
 
 module.exports = {
