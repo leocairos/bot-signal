@@ -111,13 +111,14 @@ async function doRun(isFuture = false) {
       doLogStartMsg(` - Percent change price is >= ${Math.abs(MINIMUM_PERCENT_CHANGE_ALERT)}%.\n`)
   }
   const topSymbolsBase = [...topSymbols].map(s => s.symbol + ' ')
+  const selectedSymbolsBase = [...selectedSymbols].map(s => s.symbol + ' ')
 
   doLogStartMsg(`Always alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
 
-  doLogStartMsg(`Included symbols ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
-  doLogStartMsg(`Excluded symbols ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Included symbols ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS}.\n`);
+  doLogStartMsg(`Excluded symbols ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS}.\n`);
 
-  doLogStartMsg(`Selected Symbols ${selectedSymbols.length}: ${selectedSymbols.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Selected ${selectedSymbolsBase.length} Symbols to monitor: ${selectedSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
 
   doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);

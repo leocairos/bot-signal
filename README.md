@@ -83,8 +83,8 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
   - [ ] Summary Alerts by Strategy
     - [ ] Summary (One message with all alerts by strategy on last time interval)
     - [ ] Top 5 coins on 3 last time interval
-- [ ] Exclude Symbols to monitor by env file (EXCLUDED_SYMBOLS)
-- [ ] Include Symbols to monitor by env file (INCLUDED_SYMBOLS)
+- [X] Exclude Symbols to monitor by env file (EXCLUDED_SYMBOLS)
+- [X] Include Symbols to monitor by env file (INCLUDED_SYMBOLS)
 
 
 <br/>
