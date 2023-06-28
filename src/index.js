@@ -76,7 +76,6 @@ async function doRun(isFuture = false) {
   await new Promise(r => setTimeout(r, (Math.floor(Math.random() * 3) * 1000) + 2));
 
   const futuresSymbols = await getFutureSymbols(exchange);
-
   //const [topSymbols, cmSymbols] = await getTopCoinmarketcap();
   let topSymbols, cmSymbols, selectedSymbols;
   try {

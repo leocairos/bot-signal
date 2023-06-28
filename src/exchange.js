@@ -51,7 +51,7 @@ module.exports = class Exchange {
         } else {
             streamUrl = 'F_' + await this.binance.futuresChart(symbol, interval, (symbol, interval, chart) => {
                 const tick = this.binance.last(chart);
-                const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;                
+                const isIncomplete = tick && chart[tick] && chart[tick].isFinal === false;
                 if (isIncomplete) return;
                 const ohlc = this.binance.ohlc(chart);
                 ohlc.lastTimeStamp = parseFloat(tick);
