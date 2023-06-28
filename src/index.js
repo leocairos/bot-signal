@@ -134,7 +134,8 @@ async function doRun(isFuture = false) {
   //for (const s of cmSymbols) {
   for (const s of selectedSymbols) {
     for (const q of [...QUOTES]) {
-      if (s.usdVolume24h >= MINIMUM_VOLUME_USD && s.market_cap >= MINIMUM_MARKETCAP)
+      if ((s.usdVolume24h >= MINIMUM_VOLUME_USD && s.market_cap >= MINIMUM_MARKETCAP)
+        || INCLUDED_SYMBOLS.includes(s.symbol))
         cmcSymbolQUOTE.push(`${s.symbol}${q}`)
     }
   }
