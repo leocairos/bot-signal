@@ -220,6 +220,8 @@ async function getTopCoinmarketcap() {
 
   const selectedSymbols = [...topSymbols].filter(s => !EXCLUDED_SYMBOLS.includes(s.symbol));
 
+  //console.log('INCLUDED_SYMBOLS', INCLUDED_SYMBOLS);
+
   [...cmSymbols].forEach(s => {
     if (INCLUDED_SYMBOLS.includes(s.symbol)) {
       if ([...selectedSymbols].findIndex(s2 => s2.symbol === s.symbol) < 0)
@@ -227,7 +229,7 @@ async function getTopCoinmarketcap() {
     }
   })
 
-  //console.log(topSymbols);
+  //console.log('selectedSymbols', selectedSymbols);
   //console.log(cmSymbols.length);
   return [topSymbols, cmSymbols, selectedSymbols];
 }
