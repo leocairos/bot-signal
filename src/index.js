@@ -70,6 +70,8 @@ async function doRun(isFuture = false) {
 
   const exchange = new Exchange();
 
+  await startMonitorTicker(exchange);
+
   const spotSymbols = await getSpotSymbols(exchange);
 
   //delay between 2s and 5s to prevent code -1003 Way too many requests... banned until... when run in parallel
@@ -150,8 +152,6 @@ async function doRun(isFuture = false) {
     doLogStartMsg(`  * Futures Market [${futuresVsCMC.length}]: ${futuresVsCMC.toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
 
   doSendStartLog();
-
-  startMonitorTicker(exchange);
 
   //doLogStartMsg(`Selected ${selectedSymbolsBase.length} Symbols to monitor: ${selectedSymbolsBase.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
 
