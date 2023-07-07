@@ -218,8 +218,8 @@ function activeBotCommand() {
   botCommands.launch()
 
   // Enable graceful stop
-  process.once('SIGINT', () => bot.stop('SIGINT'));
-  process.once('SIGTERM', () => bot.stop('SIGTERM'));
+  process.once('SIGINT', () => botCommands.stop('SIGINT'));
+  process.once('SIGTERM', () => botCommands.stop('SIGTERM'));
 }
 
 async function doSummary(symbolInfo = '*', periodInfo = '24h') {
