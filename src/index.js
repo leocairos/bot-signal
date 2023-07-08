@@ -124,8 +124,8 @@ async function doRun(isFuture = false) {
   //console.log(selectedSymbolsBase)
   //doLogStartMsg(`Alert for the TOP ${topSymbols.length} Symbols: ${topSymbolsBase.toString().replace(new RegExp(' ,', 'g'), ', ').trim()}.\n`);
 
-  doLogStartMsg(`Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
-  doLogStartMsg(`Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
+  doLogStartMsg(`Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}.\n`);
 
   doLogStartMsg(`CoinMarketCap (CMC) filters: `)
   doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
