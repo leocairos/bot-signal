@@ -22,6 +22,7 @@ module.exports = class TelegramMessage {
 
   sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
     const messages = [...this.MESSAGES]
+    //ToDo Group Messages to improve send limit (TelegramError: 429: Too Many Requests: retry after 5)
     messages
       .forEach(async message => {
         await new Promise(r => setTimeout(r, 2000));
