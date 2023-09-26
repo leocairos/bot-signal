@@ -6,6 +6,24 @@ function doLogStartMsg(msg) {
   console.log(msg);
 }
 
+function intervalTradingViewConvert(interval) {
+  switch (interval) {
+    case '1m': return "1";
+    case '3m': return "3";
+    case '5m': return "5";
+    case '15m': return "15";
+    case '30m': return "30";
+    case '45m': return "45";
+    case '1h': return "60";
+    case '2h': return "120";
+    case '3h': return "180";
+    case '4h': return "240";
+    case '1d': return "D";
+    case '1w': return "W";
+    case '1m': return "M";
+  }
+}
+
 function compactNumber(value) {
   if (typeof value !== "number") return value;
 
@@ -27,8 +45,21 @@ function formatNumber(value) {
         : parseFloat(value.toFixed(8));
 }
 
+function htmlAlertFormatted(symbol, interval, close, msg) {
+
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}&interval=${intervalTradingViewConvert(interval)}`;
+  const graphLink = `<a href="${url}">${symbol} ${interval} $${formatNumber(close)}</a>`
+
+  let html =
+    `<b>${graphLink}</b>
+    <i>${msg}</i>
+  `
+  return html;
+}
+
 module.exports = {
   doLogStartMsg,
   formatNumber,
   compactNumber,
+  htmlAlertFormatted
 }

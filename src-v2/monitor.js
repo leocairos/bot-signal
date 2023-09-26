@@ -1,5 +1,5 @@
 const { RSI, MFI, EMA } = require("./indicators")
-const { formatNumber } = require("./util");
+const { formatNumber, htmlAlertFormatted } = require("./util");
 const TelegramMessage = require("./telegram");
 
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
@@ -38,7 +38,7 @@ const doProcess = (symbol, interval, ohlc) => {
     const isQuoteAlert = quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
     const isPercentAlert = percentChange >= MINIMUM_PERCENT_CHANGE_ALERT;
 
-    //Atende critérios para avaliação de estrategias
+    //Críterios comum para ativação de avaliação de estratégia
     if ((isQuoteAlert && isPercentAlert) || (isTopSymbol && isQuoteAlert)) {
       console.log(`Ready to evaluate ${symbol}_${interval} (U$ ${formatNumber(ohlcCloseC)},`,
         `RSI: ${formatNumber(rsi.current)}, MFI: ${formatNumber(mfi.current)},`,
@@ -46,9 +46,9 @@ const doProcess = (symbol, interval, ohlc) => {
 
       //Estratégia 01
       if (ohlcCloseC < ema9.current) {
-        const msg = `${symbol}_${interval} last close lower than ema9 (${formatNumber(ohlcCloseC)} < ${formatNumber(ema9.current)})`
+        const msg = `${symbol}_${interval} last close lower than ema9 (${formatNumber(ohlcCloseC)} lower ${formatNumber(ema9.current)})`
         //console.warn(`   ${msg}`)
-        telegramMessages.addMessage(msg);
+        telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, ohlcCloseC, msg));
       }
 
     }
@@ -57,6 +57,7 @@ const doProcess = (symbol, interval, ohlc) => {
 
 }
 
+//Verifica se tem alertas a cada X Segundos e envia pelo Telegram
 setInterval(() => {
   console.log(`Processing message queue for Telegram (${telegramMessages.MESSAGES.length} message(s))...`)
   if (telegramMessages.MESSAGES.length > 0) {
