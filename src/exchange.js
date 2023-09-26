@@ -8,7 +8,7 @@ module.exports = class Exchange {
         this.binance = new Binance().options({
             recvWindow: 60000, // 60000 Set a higher recvWindow to increase response timeout
             useServerTime: true,
-            //family: 0,
+            family: 4,
             verbose: false, // Add extra output when subscribing to WebSockets, etc
             log: log => {
                 if (!isProductionEnv) console.log('BINANCE-API-LOG', log)
