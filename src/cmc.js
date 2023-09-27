@@ -86,8 +86,9 @@ module.exports = class CMCInfo {
     //console.log(cmSymbols.length, selectedSymbols.length, filteredSymbolsWithQuote.length)
 
     this.logStartMsg.doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
-    this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
-    this.logStartMsg.doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
+    this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
+    this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(MINIMUM_MARKETCAP))}`);
+    this.logStartMsg.doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(MINIMUM_VOLUME_USD))}`);
     this.logStartMsg.doLogStartMsg(`  * Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
     this.logStartMsg.doLogStartMsg(`  * Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
 
