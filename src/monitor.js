@@ -55,7 +55,7 @@ const doProcess = (symbol, interval, ohlc) => {
       const lastClose = ohlc.close[ohlc.close.length - 1]
       const previousClose = ohlc.close[ohlc.close.length - 2]
       const profit = ((lastClose / previousClose) - 1) * 100;
-      if (profit >= 0.2 || profit <= -0.2) {
+      if (profit >= 1 || profit <= -1) {
         const msg = `${symbol} changing ${profit.toFixed(2)}% ${interval} chart time`
         telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
       }
@@ -66,10 +66,10 @@ const doProcess = (symbol, interval, ohlc) => {
       const isLongGalileia = (currentClose03 > ema9.current) && (previousClose03 < ema9.current);
       const isShortGalileia = (currentClose03 < ema9.current) && (previousClose03 > ema9.current);
       if (isLongGalileia == true) {
-        const msg = `${symbol} ${interval} possible LONG by Galileia (EMA9: ${ema9.current})`;
+        const msg = `${symbol} ${interval} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`;
         telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
       } else if (isShortGalileia == true) {
-        const msg = `${symbol} ${interval} possible SHORT by Galileia (EMA9: ${ema9.current})`;
+        const msg = `${symbol} ${interval} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`;
         telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
       }
 
