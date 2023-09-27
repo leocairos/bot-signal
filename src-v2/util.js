@@ -48,12 +48,10 @@ function formatNumber(value) {
 function htmlAlertFormatted(symbol, interval, close, msg) {
 
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}&interval=${intervalTradingViewConvert(interval)}`;
-  const graphLink = `<a href="${url}">${symbol} ${interval} $${formatNumber(close)}</a>`
+  const graphLink = `<a href="${url}">${symbol} ${interval}</a>`
 
-  let html =
-    `<b>${graphLink}</b>
-    <i>${msg}</i>
-  `
+  let html = `<b>${graphLink}</b> $${formatNumber(close)}\n`
+  html += `<i>${msg}</i>`;
   return html;
 }
 

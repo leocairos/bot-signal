@@ -55,7 +55,7 @@ const doProcess = (symbol, interval, ohlc) => {
       const lastClose = ohlc.close[ohlc.close.length - 1]
       const previousClose = ohlc.close[ohlc.close.length - 2]
       const profit = ((lastClose / previousClose) - 1) * 100;
-      if (profit >= 1 || profit <= -1) {
+      if (profit >= 0.2 || profit <= -0.2) {
         const msg = `${symbol} changing ${profit.toFixed(2)}% ${interval} chart time`
         telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
       }
@@ -91,11 +91,11 @@ const doProcess = (symbol, interval, ohlc) => {
 }
 
 //Verifica se tem alertas a cada X Segundos e envia pelo Telegram
-setInterval(() => {
-  console.log(`Processing message queue for Telegram (${telegramMessages.MESSAGES.length} message(s))...`)
+setInterval(async () => {
+  console.log(`Processing alerts queue for Telegram (${telegramMessages.MESSAGES.length} alert(s))...`)
   if (telegramMessages.MESSAGES.length > 0) {
     //console.log(`   ${telegramMessages.MESSAGES}`)
-    telegramMessages.sendMessagesTelegram();
+    await telegramMessages.sendMessagesTelegram();
   }
 }, 5 * 1000)
 
