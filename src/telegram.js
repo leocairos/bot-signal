@@ -1,5 +1,4 @@
 const { Telegraf } = require('telegraf')
-const { removeFile, makeChartImage } = require('./util')
 
 const BOT_TOKEN = process.env.BOT_TOKEN;
 const CHAT_ID = process.env.CHAT_ID;
@@ -13,7 +12,7 @@ function getDifference(array1, array2) {
 module.exports = class TelegramMessage {
 
   constructor() {
-    this.bot = new Telegraf(BOT_TOKEN, { polling: true });
+    this.bot = new Telegraf(BOT_TOKEN, { polling: false });
     this.MESSAGES = []
   }
 
@@ -21,25 +20,44 @@ module.exports = class TelegramMessage {
     this.MESSAGES.push(message);
   }
 
-  sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
+  async sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
     const messages = [...this.MESSAGES]
-    messages
+    //Group Messages to improve send limit (TelegramError: 429: Too Many Requests: retry after 5)
+    const slicedMessages = getSlicedMessages([...this.MESSAGES])
+    //console.log('\n\n********************\n', slicedMessages, '\n\n*************')
+    slicedMessages
       .forEach(async message => {
-        await new Promise(r => setTimeout(r, 2000));
-        this.bot.telegram
+        await new Promise(r => setTimeout(r, 4000));
+        //console.log('-----m', message, CHAT_ID, '-------m')
+        const msgRet = await this.bot.telegram
           .sendMessage(
             CHAT_ID,
             message,
             { parse_mode, disable_web_page_preview })
+        //console.log('msgRet', msgRet)
       });
 
     this.MESSAGES = getDifference(this.MESSAGES, messages)
   }
 
-  async sendImageTelegram(symbol, interval) {
-    const urlImage = await makeChartImage(symbol, interval);
-    await this.bot.telegram.sendPhoto(CHAT_ID, { source: urlImage })
-    removeFile(urlImage);
-  }
-
 }
+
+//The maximum limit of a message is 4096 characters.
+function getSlicedMessages(messages) {
+  const max_size = 4096
+  const slicedMessage = [];
+  let msg = ''
+  messages.forEach(m => {
+    if (msg.length + m.length < max_size)
+      msg += `${m}\n\n`
+    else {
+      slicedMessage.push(msg);
+      msg = `${m}\n\n`;
+    }
+  })
+
+  if (msg.length > 1)
+    slicedMessage.push(msg);
+  return slicedMessage;
+}
+

@@ -2,6 +2,10 @@ const Binance = require('node-binance-api');
 
 const isProductionEnv = process.env.NODE_ENV === 'production';
 
+const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
+
+let chartCount = 0;
+
 module.exports = class Exchange {
 
     constructor() {
@@ -11,7 +15,7 @@ module.exports = class Exchange {
             family: 4,
             verbose: false, // Add extra output when subscribing to WebSockets, etc
             log: log => {
-                if (!isProductionEnv) console.log('BINANCE-API-LOG', log)
+                if (!isProductionEnv) console.warn('BINANCE-API-LOG', log)
                 //console.log('BINANCE-API-LOG', log); // You can create your own logger here, or disable console output
             },
             urls: {
@@ -27,6 +31,17 @@ module.exports = class Exchange {
         return await this.binance.exchangeInfo();
     }
 
+    async getSymbols() {
+        const symbols = await this.exchangeInfo();
+        const filteredSymbols = [...symbols.symbols]
+            .filter(s => [...QUOTES].includes(s.quoteAsset) &&
+                s.status === "TRADING"
+                //&& s.isSpotTradingAllowed === true
+            )
+            .map(s => s.symbol);
+        return filteredSymbols;
+    }
+
     async futuresExchangeInfo() {
         return await this.binance.futuresExchangeInfo();
     }
@@ -37,7 +52,7 @@ module.exports = class Exchange {
         }, true);
     }
 
-    async chartStream(alertSignals, symbol, interval, callback, isFuture = false) {
+    async chartStream(symbol, interval, callback, isFuture = false) {
         let streamUrl = '';
         if (!isFuture) {
             streamUrl = 'S_' + this.binance.websockets.chart(symbol, interval, (symbol, interval, chart) => {
@@ -46,7 +61,7 @@ module.exports = class Exchange {
                 if (isIncomplete) return;
                 const ohlc = this.binance.ohlc(chart);
                 ohlc.lastTimeStamp = parseFloat(tick);
-                callback(alertSignals, symbol, interval, ohlc);
+                callback(symbol, interval, ohlc);
             });
         } else {
             streamUrl = 'F_' + await this.binance.futuresChart(symbol, interval, (symbol, interval, chart) => {
@@ -55,10 +70,11 @@ module.exports = class Exchange {
                 if (isIncomplete) return;
                 const ohlc = this.binance.ohlc(chart);
                 ohlc.lastTimeStamp = parseFloat(tick);
-                callback(alertSignals, symbol, interval, ohlc);
+                callback(symbol, interval, ohlc);
             });
         }
-        //console.log(`Chart Stream connected at ${streamUrl}`);
+        chartCount++
+        //console.log(`Chart Stream connected at ${chartCount} ${streamUrl}`);
         return streamUrl;
     }
 

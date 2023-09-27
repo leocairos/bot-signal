@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { compactNumber, doLogStartMsg } = require("./util");
+const { compactNumber } = require("./util");
 
 const TOP_X_TO_FAVORITE = process.env.TOP_X_TO_FAVORITE || 20;
 const CMC_PRO_API_KEY = process.env.CMC_PRO_API_KEY;
@@ -14,7 +14,8 @@ const MINIMUM_MARKETCAP = process.env.MINIMUM_MARKETCAP || 500000000; //500Mi
 
 module.exports = class CMCInfo {
 
-  constructor() {
+  constructor(logStartMsg) {
+    this.logStartMsg = logStartMsg;
     this.api = axios.create({
       baseURL: 'https://pro-api.coinmarketcap.com/v1'
     });
@@ -84,11 +85,11 @@ module.exports = class CMCInfo {
 
     //console.log(cmSymbols.length, selectedSymbols.length, filteredSymbolsWithQuote.length)
 
-    doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
-    doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
-    doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
-    doLogStartMsg(`  * Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
-    doLogStartMsg(`  * Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
+    this.logStartMsg.doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
+    this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(`${MINIMUM_MARKETCAP}`))}`);
+    this.logStartMsg.doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(`${MINIMUM_VOLUME_USD}`))}`);
+    this.logStartMsg.doLogStartMsg(`  * Included ${INCLUDED_SYMBOLS.length} Symbols: ${INCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
+    this.logStartMsg.doLogStartMsg(`  * Excluded ${EXCLUDED_SYMBOLS.length} Symbols: ${EXCLUDED_SYMBOLS.sort().toString().replace(new RegExp(',', 'g'), ', ').trim()}`);
 
     this.cmSymbols = cmSymbols;
     this.selectedSymbols = selectedSymbols;

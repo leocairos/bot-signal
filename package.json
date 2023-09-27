@@ -1,14 +1,11 @@
 {
   "name": "bot-signal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --trace-warnings --watch src ./src/index.js",
-    "start": "node --trace-warnings ./src/index.js",
-    "dev-v2": "nodemon --trace-warnings --watch src-v2 ./src-v2/index.js",
-    "start-v2": "node --trace-warnings ./src-v2/index.js",
-    "start-only-futures": "node ./src/index.js only-futures"
+    "start": "node --trace-warnings ./src/index.js"
   },
   "keywords": [],
   "author": {
