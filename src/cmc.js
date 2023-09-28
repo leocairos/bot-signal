@@ -35,9 +35,10 @@ module.exports = class CMCInfo {
   }
 
   async updateCmcInfo() {
-
-    const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&limit=1000`;
+    const cmcLimit = 1000
+    const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&limit=${cmcLimit}`;
     const result = await this.api.get(urlCMC);
+    const cmcTotalCount = result.data.status.total_count;
 
     const cmSymbols = result.data.data.map(item => (
       {
@@ -85,6 +86,7 @@ module.exports = class CMCInfo {
 
     //console.log(cmSymbols.length, selectedSymbols.length, filteredSymbolsWithQuote.length)
 
+    this.logStartMsg.doLogStartMsg(`\nSelected the TOP ${cmcLimit} symbols (by Marketcap) from a total of ${cmcTotalCount} in the Coinmarketcap database.`);
     this.logStartMsg.doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
     this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
     this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(MINIMUM_MARKETCAP))}`);
