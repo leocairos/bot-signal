@@ -1,5 +1,6 @@
 require('dotenv-safe').config();
 
+const { description, version } = require("../package.json")
 const Exchange = require("./exchange");
 
 const { startMonitor, startMonitorTicker } = require("./monitor");
@@ -17,7 +18,8 @@ const cmcInfo = new CMCInfo(logStartMsg);
 
 async function doRun() {
 
-  logStartMsg.doLogStartMsg(`System started at ${new Date().toISOString()}\n`);
+  logStartMsg.doLogStartMsg(`${description} v${version}`);
+  logStartMsg.doLogStartMsg(`  System started at ${new Date().toUTCString()}\n`);
 
   const exchange = new Exchange();
 

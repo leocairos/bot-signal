@@ -15,7 +15,10 @@ const telegramMessages = new TelegramMessage();
 function calculateIndicators(ohlc) {
   const rsi = RSI(ohlc.close)
   const mfi = MFI(ohlc)
+  const ema3 = EMA(ohlc.close, 3)
+  const ema8 = EMA(ohlc.close, 8)
   const ema9 = EMA(ohlc.close, 9)
+  const ema20 = EMA(ohlc.close, 20)
   const ema100 = EMA(ohlc.close, 100)
 
   const isNumberIndicator = typeof rsi.current === "number" && typeof mfi.current === "number";
@@ -24,11 +27,11 @@ function calculateIndicators(ohlc) {
   const isUpperPZero = (rsi.previous > 0 && mfi.previous > 0)
   const isOkToProcess = isNumberIndicator && isUpperZero && isNumberPIndicator && isUpperPZero
 
-  return [rsi, mfi, ema9, ema100, isOkToProcess];
+  return [rsi, mfi, ema9, ema100, isOkToProcess, ema3, ema8, ema20];
 }
 
 const doProcess = (symbol, interval, ohlc) => {
-  const [rsi, mfi, ema9, ema100, isOkToProcess] = calculateIndicators(ohlc);
+  const [rsi, mfi, ema9, ema100, isOkToProcess, ema3, ema8, ema20] = calculateIndicators(ohlc);
 
   if (isOkToProcess) {
     const ticker = ticker24h[symbol];
@@ -41,9 +44,8 @@ const doProcess = (symbol, interval, ohlc) => {
 
     //Críterios comum para ativação de avaliação de estratégia
     if ((isQuoteAlert && isPercentAlert)) {
-      console.log(`Ready to evaluate ${symbol}_${interval} (U$ ${formatNumber(currentClose)},`,
-        `RSI: ${formatNumber(rsi.current)}, MFI: ${formatNumber(mfi.current)},`,
-        `EMA9: ${formatNumber(ema9.current)}, EMA100: ${formatNumber(ema100.current)})...`);
+      console.log(`Ready to evaluate ${symbol}_${interval} U$ ${formatNumber(currentClose)} `,
+        `rsi: ${formatNumber(rsi.current)} ema9: ${formatNumber(ema9.current)}`);
 
       //Estratégia 01
       if (currentClose < ema9.current) {
@@ -84,6 +86,20 @@ const doProcess = (symbol, interval, ohlc) => {
         telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
       }
 
+      //Estratégia 05 - Didi Index
+      const didiBuySignal = ema3.current > ema8.current
+      const didiSellSignal = ema3.current < ema8.current
+      const didiBuyConf = ema8.current > ema20.current
+      const didiSellConf = ema8.current < ema20.current
+      const didiHighNeedle = didiBuySignal && didiBuyConf
+      const didiLowNeedle = didiSellSignal && didiSellConf
+      if (didiHighNeedle == true) {
+        const msg = `${symbol} ${interval} with High Needle (ema3: ${formatNumber(ema3.current)}, ema8: ${formatNumber(ema8.current)}, ema20: ${formatNumber(ema20.current)})`;
+        telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
+      } else if (didiLowNeedle == true) {
+        const msg = `${symbol} ${interval} with Low Needle (ema3: ${formatNumber(ema3.current)}, ema8: ${formatNumber(ema8.current)}, ema20: ${formatNumber(ema20.current)})`;
+        telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
+      }
     }
 
   }
