@@ -1,5 +1,5 @@
 const { RSI, MFI, EMA, bollingerBands, TRIX, Stochastic, ADX } = require("./indicators")
-const { formatNumber, htmlAlertFormatted, getGraphicLink } = require("./util");
+const { formatNumber, compactNumber, getGraphicLink } = require("./util");
 const TelegramMessage = require("./telegram");
 
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
@@ -48,17 +48,17 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       console.log(`Ready to evaluate ${symbol}_${interval} U$ ${formatNumber(currentClose)} `,
         `rsi: ${formatNumber(rsi.current)} ema9: ${formatNumber(ema9.current)}`);
 
-      let msgTitle = `<b>${cmcInfo.getSymbolLink(symbol)}</b> $${formatNumber(currentClose)}`
-      msgTitle += ` Vol 24h: ${formatNumber(quoteVolume)} Price Change 24h: ${percentChange.toFixed(2)}%`
+      let msgTitle = `<b>${(cmcInfo.getSymbolLink(symbol)).upper()} $${formatNumber(currentClose)}`
+      msgTitle += ` Price Change 24h: ${percentChange.toFixed(2)}% Vol 24h: ${compactNumber(quoteVolume)}</b>`
       let msgBody = ''
 
       //Estratégia 01 - Only for example
       if (currentClose < ema9.current) {
         // const msg = `${symbol}_${interval} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`
       } else if (currentClose > ema9.current) {
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} last close upper than ema9 (${formatNumber(currentClose)} upper than ${formatNumber(ema9.current)})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} last close upper than ema9 (${formatNumber(currentClose)} upper than ${formatNumber(ema9.current)})`
       }
 
       //Estratégia 02 (By Ricardo) compra quando sobe 1% e venda quando cai 1%
@@ -68,7 +68,7 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (profit >= 1 || profit <= -1) {
         // const msg = `${symbol} changing ${profit.toFixed(2)}% ${interval} chart time`
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} changing ${profit.toFixed(2)}% ${interval} chart time`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} changing ${profit.toFixed(2)}% ${interval} chart time`
       }
 
       //Estratégia 03 - Galileia By H7
@@ -79,11 +79,11 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (isLongGalileia == true) {
         // const msg = `${symbol} ${interval} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`
       } else if (isShortGalileia == true) {
         // const msg = `${symbol} ${interval} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`
       }
 
       //Estratégia 04 - Scalp Agiota by H7
@@ -92,11 +92,11 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (overSold == true) {
         // const msg = `${symbol} ${interval} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`
       } else if (overBought == true) {
         //const msg = `${symbol} ${interval} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`
       }
 
       //Estratégia 05 - Didi Index
@@ -132,11 +132,11 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (didiHighNeedle == true && didiBuyHints == true) {
         //const msg = `${symbol} ${interval} with High Needle ${msgDidiBuyHints}`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} with High Needle ${msgDidiBuyHints}`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} with High Needle ${msgDidiBuyHints}`
       } else if (didiLowNeedle == true && didiSellHints == true) {
         //const msg = `${symbol} ${interval} with Low Needle ${msgDidiSellHints}`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n * ${getGraphicLink(symbol, interval)} with Low Needle ${msgDidiSellHints}`
+        msgBody += `\n ${getGraphicLink(symbol, interval)} with Low Needle ${msgDidiSellHints}`
       }
 
       //console.log(msgBody)
