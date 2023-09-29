@@ -8,7 +8,8 @@ let chartCount = 0;
 
 module.exports = class Exchange {
 
-    constructor() {
+    constructor(cmcInfo) {
+        this.cmcInfo = cmcInfo;
         this.binance = new Binance().options({
             recvWindow: 60000, // 60000 Set a higher recvWindow to increase response timeout
             useServerTime: true,
@@ -61,7 +62,7 @@ module.exports = class Exchange {
                 if (isIncomplete) return;
                 const ohlc = this.binance.ohlc(chart);
                 ohlc.lastTimeStamp = parseFloat(tick);
-                callback(symbol, interval, ohlc);
+                callback(this.cmcInfo, symbol, interval, ohlc);
             });
         } else {
             streamUrl = 'F_' + await this.binance.futuresChart(symbol, interval, (symbol, interval, chart) => {
@@ -70,7 +71,7 @@ module.exports = class Exchange {
                 if (isIncomplete) return;
                 const ohlc = this.binance.ohlc(chart);
                 ohlc.lastTimeStamp = parseFloat(tick);
-                callback(symbol, interval, ohlc);
+                callback(this.cmcInfo, symbol, interval, ohlc);
             });
         }
         chartCount++

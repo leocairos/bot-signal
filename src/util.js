@@ -68,13 +68,16 @@ function formatNumber(value) {
         : parseFloat(value.toFixed(8));
 }
 
-function htmlAlertFormatted(symbol, interval, close, msg) {
-
+function getGraphicLink(symbol, interval) {
   const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}&interval=${intervalTradingViewConvert(interval)}`;
-  const graphLink = `<a href="${url}">${symbol} ${interval}</a>`
+  return `<a href="${url}">${symbol} ${interval}</a>`
+}
+
+function htmlAlertFormatted(symbol, interval, close, msg) {
+  const graphLink = getGraphicLink(symbol, interval)
 
   let html = `<b>${graphLink}</b> $${formatNumber(close)}\n`
-  html += `<i>${msg}</i>`;
+  html += `${msg}`;
   return html;
 }
 
@@ -82,5 +85,6 @@ module.exports = {
   formatNumber,
   compactNumber,
   htmlAlertFormatted,
-  LogStartMsg
+  LogStartMsg,
+  getGraphicLink
 }

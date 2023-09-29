@@ -21,7 +21,9 @@ async function doRun() {
   logStartMsg.doLogStartMsg(`${description} v${version}`);
   logStartMsg.doLogStartMsg(`  System started at ${new Date().toUTCString()}\n`);
 
-  const exchange = new Exchange();
+  await cmcInfo.updateCmcInfo();
+
+  const exchange = new Exchange(cmcInfo);
 
   await startMonitorTicker(exchange);
 
@@ -30,7 +32,6 @@ async function doRun() {
   logStartMsg.doLogStartMsg(`Monitoring all available symbols [${INTERVALS}] with quotes asset [${QUOTES}]:`);
   logStartMsg.doLogStartMsg(` - ${spotSymbols.length} spot symbols`)
 
-  await cmcInfo.updateCmcInfo();
   const cmcSymbolQUOTE = cmcInfo.filteredSymbolsWithQuote;
 
   const spotVsCMC = [...spotSymbols].filter(s => cmcSymbolQUOTE.includes(s)).sort();

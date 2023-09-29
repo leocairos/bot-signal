@@ -34,6 +34,19 @@ module.exports = class CMCInfo {
     return this.topSymbols.includes(symbol);
   }
 
+  getSymbolLink(symbol) {
+    let symbolWithoutQuote = `${symbol}`;
+    [...QUOTES].forEach(q => {
+      const indexQ = symbolWithoutQuote.indexOf(q);
+      if (indexQ > 2)
+        symbolWithoutQuote = symbolWithoutQuote.replace(q, '');
+    })
+
+    const cmSymbol = [...this.cmSymbols].find(s => s.symbol === symbolWithoutQuote);
+    const url = `https://coinmarketcap.com/currencies/${cmSymbol?.slug}/`;
+    return `<a href="${url}">${symbol} [${cmSymbol?.cmc_rank}]</a>`
+  }
+
   async updateCmcInfo() {
     const cmcLimit = 1000
     const urlCMC = `/cryptocurrency/listings/latest?sort=market_cap&limit=${cmcLimit}`;
@@ -86,8 +99,9 @@ module.exports = class CMCInfo {
 
     //console.log(cmSymbols.length, selectedSymbols.length, filteredSymbolsWithQuote.length)
 
-    this.logStartMsg.doLogStartMsg(`\nSelected the TOP ${cmcLimit} symbols (by Marketcap) from a total of ${cmcTotalCount} in the Coinmarketcap database.`);
+    this.logStartMsg.doLogStartMsg(`Selecting the TOP ${cmcLimit} symbols (by Marketcap) from a total of ${cmcTotalCount} in the Coinmarketcap database:`);
     this.logStartMsg.doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
+    this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
     this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
     this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(MINIMUM_MARKETCAP))}`);
     this.logStartMsg.doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(MINIMUM_VOLUME_USD))}`);
