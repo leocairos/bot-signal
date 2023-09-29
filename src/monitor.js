@@ -42,7 +42,7 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
     const isQuoteAlert = quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT;
     const isPercentAlert = Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT;
 
-    console.log(symbol, interval, rsi.current, isQuoteAlert, isPercentAlert)
+    //console.log(symbol, interval, rsi.current, isQuoteAlert, isPercentAlert)
     //Críterios comum para ativação de avaliação de estratégia
     if ((isQuoteAlert && isPercentAlert)) {
       console.log(`Ready to evaluate ${symbol}_${interval} U$ ${formatNumber(currentClose)} `,
