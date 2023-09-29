@@ -1,13 +1,13 @@
 const technicalIndicators = require('technicalindicators');
 
-function fibonacciRetracement(close, uptrend=0.10, downtrend=0.10) {
+function fibonacciRetracement(close, uptrend = 0.10, downtrend = 0.10) {
     // ToDo: Improve this logic
     const fibResultUp = technicalIndicators.fibonacciretracement(
         close, close * (1 + uptrend)
-        )
+    )
     const fibResultDown = technicalIndicators.fibonacciretracement(
         close, close * (1 - downtrend)
-        )
+    )
     return {
         current: fibResultUp,
         previous: fibResultDown
@@ -95,11 +95,81 @@ function EMA(closes, period = 10) {
     }
 }
 
+function bollingerBands(closes, period = 20, stdDev = 2) {
+    period = parseInt(period);
+    stdDev = parseInt(stdDev);
+
+    if (closes.length <= period) return { current: false, previous: false };
+
+    const bbResult = technicalIndicators.bollingerbands({
+        period,
+        stdDev,
+        values: closes
+    })
+    return {
+        current: bbResult[bbResult.length - 1],
+        previous: bbResult[bbResult.length - 2]
+    }
+}
+
+function TRIX(closes, period = 18) {
+    period = parseInt(period);
+    if (closes.length <= period) return { current: false, previous: false };
+
+    const trixResult = technicalIndicators.trix({
+        period,
+        values: closes
+    })
+    return {
+        current: trixResult[trixResult.length - 1],
+        previous: trixResult[trixResult.length - 2]
+    }
+}
+
+function Stochastic(ohlc, period = 14, signalPeriod = 3) {
+    period = parseInt(period);
+    signalPeriod = parseInt(signalPeriod);
+    if (ohlc.high.length <= period || ohlc.high.length <= signalPeriod)
+        return { current: false, previous: false };
+
+    const stochResult = technicalIndicators.stochastic({
+        high: ohlc.high,
+        low: ohlc.low,
+        close: ohlc.close,
+        period,
+        signalPeriod
+    })
+    return {
+        current: stochResult[stochResult.length - 1],
+        previous: stochResult[stochResult.length - 2]
+    }
+}
+
+function ADX(ohlc, period = 14) {
+    period = parseInt(period);
+    if (ohlc.high.length <= period) return { current: false, previous: false };
+
+    const adxResult = technicalIndicators.adx({
+        high: ohlc.high,
+        low: ohlc.low,
+        close: ohlc.close,
+        period
+    })
+    return {
+        current: adxResult[adxResult.length - 1],
+        previous: adxResult[adxResult.length - 2]
+    }
+}
+
 module.exports = {
     fibonacciRetracement,
     MFI,
     RSI,
     MACD,
     SMA,
-    EMA
+    EMA,
+    bollingerBands,
+    TRIX,
+    Stochastic,
+    ADX
 }

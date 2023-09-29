@@ -26,16 +26,18 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 <br/>
 
 ## 💱 Available Indicators
-- [X] fibonacciRetracement
-- [X] MFI
-  - Params: MFI(period = 14)
-  - Return: Current and Previous value
-- [X] RSI
-  - Params: MFI(period = 14)
-  - Return: Current and Previous value
-- [X] MACD
-- [X] SMA
+
+- [X] ADX
+- [X] Bollinger Bands
 - [X] EMA
+- [X] Fibonacci Retracement
+- [X] MACD
+- [X] MFI
+- [X] RSI
+- [X] SMA
+- [X] Stochastic
+- [X] TRIX
+
 
 ## 📆 Roadmap
 
@@ -45,13 +47,6 @@ This Bot connect in Binance Api and monitoring Candles by Stream.
 - [X] Monitoring All available Symbols by Quote (Exchange Info)
   - [X] Spot
   - [ ] Futures
-- [X] Available Indicators
-  - [X] RSI
-  - [X] MFI
-  - [X] MACD
-  - [X] SMA
-  - [X] EMA
-  - [X] Fibonacci Retracement
 - [X] Send formatted Telegram message
 - [ ] Connect to Binance Futures API
   - [ ] Rest
