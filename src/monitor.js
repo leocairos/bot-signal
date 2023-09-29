@@ -48,7 +48,7 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       console.log(`Ready to evaluate ${symbol}_${interval} U$ ${formatNumber(currentClose)} `,
         `rsi: ${formatNumber(rsi.current)} ema9: ${formatNumber(ema9.current)}`);
 
-      let msgTitle = `<b>${(cmcInfo.getSymbolLink(symbol)).upper()} $${formatNumber(currentClose)}`
+      let msgTitle = `<b>${(cmcInfo.getSymbolLink(symbol)).toUpperCase()} $${formatNumber(currentClose)}`
       msgTitle += ` Price Change 24h: ${percentChange.toFixed(2)}% Vol 24h: ${compactNumber(quoteVolume)}</b>`
       let msgBody = ''
 
