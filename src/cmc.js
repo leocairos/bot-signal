@@ -44,7 +44,7 @@ module.exports = class CMCInfo {
 
     const cmSymbol = [...this.cmSymbols].find(s => s.symbol === symbolWithoutQuote);
     const url = `https://coinmarketcap.com/currencies/${cmSymbol?.slug}/`;
-    return `<a href="${url}">${symbol} [${cmSymbol?.cmc_rank}]</a>`
+    return `<a href="${url}">${cmSymbol.name} [${cmSymbol?.cmc_rank}]</a>`
   }
 
   async updateCmcInfo() {
