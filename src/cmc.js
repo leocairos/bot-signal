@@ -30,21 +30,37 @@ module.exports = class CMCInfo {
     this.topSymbols = [];
   }
 
-  async isTopSymbol(symbol) {
-    return this.topSymbols.includes(symbol);
+  getUsdValue(symbol) {
+    return this.cmSymbols.find(s => s.symbol == symbol).usdValue || 1;
   }
 
-  getSymbolLink(symbol) {
-    let symbolWithoutQuote = `${symbol}`;
+  getSymbolByCoinPair(coinPair) {
+    let symbolWithoutQuote = `${coinPair}`;
     [...QUOTES].forEach(q => {
       const indexQ = symbolWithoutQuote.indexOf(q);
       if (indexQ > 2)
         symbolWithoutQuote = symbolWithoutQuote.replace(q, '');
     })
 
+    return symbolWithoutQuote;
+  }
+
+  getQuoteByCoinPair(coinPair) {
+    let quoteWithoutSymbol = `${coinPair}`;
+    let quote = '';
+    [...QUOTES].forEach(q => {
+      const indexQ = quoteWithoutSymbol.indexOf(q);
+      if (indexQ >= 0)
+        quote = q;
+    })
+    return quote;
+  }
+
+  getSymbolLink(coinPair) {
+    const symbolWithoutQuote = this.getSymbolByCoinPair(coinPair);
     const cmSymbol = [...this.cmSymbols].find(s => s.symbol === symbolWithoutQuote);
     const url = `https://coinmarketcap.com/currencies/${cmSymbol?.slug}/`;
-    return `<a href="${url}">${cmSymbol.name} [${cmSymbol?.cmc_rank}]</a>`
+    return `<a href="${url}">${cmSymbol.name} [${cmSymbol?.cmc_rank}º]</a>`
   }
 
   async updateCmcInfo() {
@@ -101,7 +117,6 @@ module.exports = class CMCInfo {
 
     this.logStartMsg.doLogStartMsg(`Selecting the TOP ${cmcLimit} symbols (by Marketcap) from a total of ${cmcTotalCount} in the Coinmarketcap database:`);
     this.logStartMsg.doLogStartMsg(`\nCoinMarketCap (CMC) filters: `)
-    this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
     this.logStartMsg.doLogStartMsg(`  * Minimum rank position: ${TOP_X_TO_FAVORITE}º`);
     this.logStartMsg.doLogStartMsg(`  * Minimum MarketCap: ${compactNumber(parseFloat(MINIMUM_MARKETCAP))}`);
     this.logStartMsg.doLogStartMsg(`  * Minimum USD Volume (last 24h): ${compactNumber(parseFloat(MINIMUM_VOLUME_USD))}`);

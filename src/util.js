@@ -47,6 +47,24 @@ function intervalTradingViewConvert(interval) {
   }
 }
 
+function intervalSortOrder(interval) {
+  switch (interval) {
+    case '1m': return 1;
+    case '3m': return 3;
+    case '5m': return 5;
+    case '15m': return 15;
+    case '30m': return 30;
+    case '45m': return 45;
+    case '1h': return 60;
+    case '2h': return 120;
+    case '3h': return 180;
+    case '4h': return 240;
+    case '1d': return 60 * 24;
+    case '1w': return 60 * 24 * 7;
+    case '1m': return 60 * 24 * 7 * 30;
+  }
+}
+
 function compactNumber(value) {
   if (typeof value !== "number") return value;
 
@@ -86,5 +104,6 @@ module.exports = {
   compactNumber,
   htmlAlertFormatted,
   LogStartMsg,
-  getGraphicLink
+  getGraphicLink,
+  intervalSortOrder
 }
