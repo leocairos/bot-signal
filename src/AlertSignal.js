@@ -49,13 +49,13 @@ module.exports = class AlertSignal {
     const sendedAlerts = this.addMessagesAlert();
 
     for (var symbolAlerts in sendedAlerts) {
-      [...sendedAlerts[symbolAlerts]]
+      const ordered = [...sendedAlerts[symbolAlerts]]
         .sort((a, b) => intervalSortOrder(a.interval) > intervalSortOrder(b.interval) ? 0 : 1)
       //console.log('sendedAlerts[symbolAlerts]', sendedAlerts[symbolAlerts])
-      const msgTitle = sendedAlerts[symbolAlerts][0].msgTitle
+      const msgTitle = ordered[0].msgTitle
       let msgBody = ''
-      for (var m in sendedAlerts[symbolAlerts]) {
-        msgBody += `   ${sendedAlerts[symbolAlerts][m].message}\n`
+      for (var m in ordered) {
+        msgBody += `   ${ordered[m].message}\n`
       }
       //console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
       this.telegramMessages.addMessage(`${msgTitle}\n${msgBody}`);

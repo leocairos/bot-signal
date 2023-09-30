@@ -3,6 +3,7 @@ const { formatNumber, compactNumber, getGraphicLink } = require("./util");
 const TelegramMessage = require("./telegram");
 const AlertSignal = require("./AlertSignal");
 
+const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL || 60;
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
 
@@ -188,7 +189,7 @@ setInterval(async () => {
     //console.log(`   ${telegramMessages.MESSAGES}`)
     await telegramMessages.sendMessagesTelegram();
   }
-}, 15 * 1000)
+}, SEND_ALERT_INTERVAL * 1000)
 
 async function startMonitor(exchange, symbol, interval, isFuture = false) {
   return await exchange.chartStream(symbol, interval, doProcess, isFuture);

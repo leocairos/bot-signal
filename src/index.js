@@ -9,6 +9,7 @@ const { LogStartMsg, compactNumber } = require("./util");
 
 const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
+const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL || 60;
 
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
@@ -48,7 +49,7 @@ async function doRun() {
   logStartMsg.doLogStartMsg(`Monitoring ${INTERVALS.length * spotVsCMC.length} candle channels (${spotVsCMC.length} symbols in ${INTERVALS.length} times frame)\n`)
 
   if (MINIMUM_QUOTE_VOLUME_ALERT !== 0 || MINIMUM_PERCENT_CHANGE_ALERT !== 0) {
-    logStartMsg.doLogStartMsg(`Alerts only when (by last 24h): `)
+    logStartMsg.doLogStartMsg(`Alerts every ${SEND_ALERT_INTERVAL} seconds for assets that in the last 24 hours: `)
     if (MINIMUM_QUOTE_VOLUME_ALERT !== 0)
       logStartMsg.doLogStartMsg(` - Quote volume is >= ${compactNumber(MINIMUM_QUOTE_VOLUME_ALERT)}`)
     if (MINIMUM_PERCENT_CHANGE_ALERT !== 0)
