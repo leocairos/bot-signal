@@ -22,6 +22,7 @@ module.exports = class TelegramMessage {
 
   async sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
     const messages = [...this.MESSAGES]
+    messages.forEach(m => console.log('sendMessagesTelegram', m))
     //Group Messages to improve send limit (TelegramError: 429: Too Many Requests: retry after 5)
     const slicedMessages = getSlicedMessages([...this.MESSAGES])
     //console.log('\n\n********************\n', slicedMessages, '\n\n*************')
