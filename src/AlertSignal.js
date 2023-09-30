@@ -58,11 +58,9 @@ module.exports = class AlertSignal {
       for (var m in sendedAlerts[symbolAlerts]) {
         msgBody += `  ${sendedAlerts[symbolAlerts][m].message}\n`
       }
-      // console.log('a', Object.keys(sendedAlerts[symbolAlerts]))
-      // sendedAlerts[symbolAlerts].foreach(m => msgBody += `${m}\n`);
-      //console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
+      console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
       this.telegramMessages.addMessage(`${msgTitle}\n${msgBody}`);
     }
-    //this.telegramMessages.sendMessagesTelegram();
+
   }
 }
