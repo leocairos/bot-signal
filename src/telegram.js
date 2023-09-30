@@ -48,6 +48,7 @@ function getSlicedMessages(messages) {
   const slicedMessage = [];
   let msg = ''
   messages.forEach(m => {
+    console.log('message', m)
     if (msg.length + m.length < max_size)
       msg += `${m}\n\n`
     else {
