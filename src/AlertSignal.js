@@ -39,7 +39,7 @@ module.exports = class AlertSignal {
     }, {});
 
     //console.log('alerts', alerts)
-    //console.log('groupBySymbol', groupBySymbol)
+    console.log('groupBySymbol', groupBySymbol)
     console.log(`${alertsUnSorted.length} alerts to send (by ${Object.keys(groupBySymbol).length} symbols)...`)
     this.alerts = getDifference(this.alerts, alertsUnSorted)
 
@@ -60,7 +60,7 @@ module.exports = class AlertSignal {
       }
       // console.log('a', Object.keys(sendedAlerts[symbolAlerts]))
       // sendedAlerts[symbolAlerts].foreach(m => msgBody += `${m}\n`);
-      console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
+      //console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
       this.telegramMessages.addMessage(`${msgTitle}\n${msgBody}`);
     }
     //this.telegramMessages.sendMessagesTelegram();
