@@ -29,7 +29,7 @@ module.exports = class AlertSignal {
   addMessagesAlert() {
     const alertsUnSorted = [...this.alerts];
     //sort alert by symbol
-    const alerts = [...alertsUnSorted].sort((a, b) => a.symbol > b.symbol ? 1 : 0)
+    const alerts = [...alertsUnSorted].sort((a, b) => a.symbol > b.symbol ? 0 : 1)
 
     const groupBySymbol = [...alerts].reduce((group, alert) => {
       const { symbol } = alert;
@@ -39,7 +39,7 @@ module.exports = class AlertSignal {
     }, {});
 
     //console.log('alerts', alerts)
-    console.log('groupBySymbol', groupBySymbol)
+    //console.log('groupBySymbol', groupBySymbol)
     console.log(`${alertsUnSorted.length} alerts to send (by ${Object.keys(groupBySymbol).length} symbols)...`)
     this.alerts = getDifference(this.alerts, alertsUnSorted)
 
@@ -51,8 +51,8 @@ module.exports = class AlertSignal {
 
     for (var symbolAlerts in sendedAlerts) {
       [...sendedAlerts[symbolAlerts]]
-        .sort((a, b) => intervalSortOrder(a.interval) > intervalSortOrder(b.interval) ? 1 : 0)
-      console.log('sendedAlerts[symbolAlerts]', sendedAlerts[symbolAlerts])
+        .sort((a, b) => intervalSortOrder(a.interval) > intervalSortOrder(b.interval) ? 0 : 1)
+      //console.log('sendedAlerts[symbolAlerts]', sendedAlerts[symbolAlerts])
       const msgTitle = sendedAlerts[symbolAlerts][0].msgTitle
       let msgBody = ''
       for (var m in sendedAlerts[symbolAlerts]) {
