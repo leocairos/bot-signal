@@ -19,6 +19,7 @@ module.exports = class TelegramMessage {
   addMessage(message) {
     this.MESSAGES.push(message);
     console.log('addMessage', message)
+    console.log('\n\nthis.MESSAGES', this.MESSAGES, '\n\n')
   }
 
   async sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
