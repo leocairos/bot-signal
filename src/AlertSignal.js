@@ -52,7 +52,7 @@ module.exports = class AlertSignal {
     for (var symbolAlerts in sendedAlerts) {
       [...sendedAlerts[symbolAlerts]]
         .sort((a, b) => intervalSortOrder(a.interval) > intervalSortOrder(b.interval) ? 1 : 0)
-      //console.log('sendedAlerts[symbolAlerts]', sendedAlerts[symbolAlerts])
+      console.log('sendedAlerts[symbolAlerts]', sendedAlerts[symbolAlerts])
       const msgTitle = sendedAlerts[symbolAlerts][0].msgTitle
       let msgBody = ''
       for (var m in sendedAlerts[symbolAlerts]) {
