@@ -12,7 +12,7 @@ const MFI_LIMITS = process.env.MFI_LIMITS ? process.env.MFI_LIMITS.split(',') : 
 let ticker24h = {}
 
 const telegramMessages = new TelegramMessage();
-const alertSignal = new AlertSignal();
+const alertSignal = new AlertSignal(telegramMessages);
 
 function isCalculated(indicator) {
   const isNumber = typeof indicator.current === "number";
@@ -44,11 +44,8 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
 
     //Quote when not stablecoin dollar paired
     const quote = cmcInfo.getQuoteByCoinPair(symbol);
-    const quoteUsdValue = cmcInfo.getUsdValue(quote).toFixed(0);
-    const isQuoteAlert =
-      parseFloat(quoteUsdValue) == 1
-        ? quoteVolume >= MINIMUM_QUOTE_VOLUME_ALERT
-        : quoteVolume * quoteUsdValue >= MINIMUM_QUOTE_VOLUME_ALERT;
+    const quoteUsdValue = cmcInfo.getUsdValue(quote);
+    const isQuoteAlert = quoteVolume * quoteUsdValue >= MINIMUM_QUOTE_VOLUME_ALERT;
     const isPercentAlert = Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT;
 
     //console.log('symbolM', symbol, 'quoteUsdValue', quoteUsdValue, 'quoteVolume', quoteVolume)
@@ -67,11 +64,11 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (currentClose < ema9.current) {
         // const msg = `${symbol}_${interval} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`
-        messages.push(`${getGraphicLink(symbol, interval)} last close lower than ema9 (${formatNumber(currentClose)} lower than ${formatNumber(ema9.current)})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} last close LOWER than ema9 ($ ${formatNumber(ema9.current)})`
+        messages.push(`${getGraphicLink(symbol, interval)} last close LOWER than ema9 ($ ${formatNumber(ema9.current)})`)
       } else if (currentClose > ema9.current) {
-        msgBody += `\n ${getGraphicLink(symbol, interval)} last close upper than ema9 (${formatNumber(currentClose)} upper than ${formatNumber(ema9.current)})`
-        messages.push(`${getGraphicLink(symbol, interval)} last close upper than ema9 (${formatNumber(currentClose)} upper than ${formatNumber(ema9.current)})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} last close UPPER than ema9 ($ ${formatNumber(ema9.current)})`
+        messages.push(`${getGraphicLink(symbol, interval)} last close UPPER than ema9 ($ ${formatNumber(ema9.current)})`)
       }
 
       //Estratégia 02 (By Ricardo) compra quando sobe 1% e venda quando cai 1%
@@ -93,13 +90,13 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (isLongGalileia == true) {
         // const msg = `${symbol} ${interval} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`
-        messages.push(`${getGraphicLink(symbol, interval)} possible LONG by Galileia (EMA9: ${formatNumber(ema9.current)})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} possible LONG by Galileia (ema9 $ ${formatNumber(ema9.current)})`
+        messages.push(`${getGraphicLink(symbol, interval)} possible LONG by Galileia (ema9 $ ${formatNumber(ema9.current)})`)
       } else if (isShortGalileia == true) {
-        // const msg = `${symbol} ${interval} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`;
+        // const msg = `${symbol} ${interval} possible SHORT by Galileia (ema9: ${formatNumber(ema9.current)})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`
-        messages.push(`${getGraphicLink(symbol, interval)} possible SHORT by Galileia (EMA9: ${formatNumber(ema9.current)})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} possible SHORT by Galileia (ema9 $ ${formatNumber(ema9.current)})`
+        messages.push(`${getGraphicLink(symbol, interval)} possible SHORT by Galileia (ema9 $ ${formatNumber(ema9.current)})`)
       }
 
       //Estratégia 04 - Scalp Agiota by H7
@@ -108,13 +105,13 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
       if (overSold == true) {
         // const msg = `${symbol} ${interval} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`;
         // telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`
-        messages.push(`${getGraphicLink(symbol, interval)} is OVERSOLD (RSI: ${rsi.current}, MFI: ${mfi.current})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERSOLD (rsi ${rsi.current}, mfi ${mfi.current})`
+        messages.push(`${getGraphicLink(symbol, interval)} is OVERSOLD (rsi ${rsi.current}, mfi ${mfi.current})`)
       } else if (overBought == true) {
-        //const msg = `${symbol} ${interval} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`;
+        //const msg = `${symbol} ${interval} is OVERBOUGHT (rsi ${rsi.current}, mfi ${mfi.current})`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`
-        messages.push(`${getGraphicLink(symbol, interval)} is OVERBOUGHT (RSI: ${rsi.current}, MFI: ${mfi.current})`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} is OVERBOUGHT (rsi ${rsi.current}, mfi ${mfi.current})`
+        messages.push(`${getGraphicLink(symbol, interval)} is OVERBOUGHT (rsi ${rsi.current}, mfi ${mfi.current})`)
       }
 
       //Estratégia 05 - Didi Index
@@ -143,25 +140,38 @@ const doProcess = (cmcInfo, symbol, interval, ohlc) => {
         || didiStochSignalBuy == true || didiAdxSignalBuy == true;
       const didiSellHints = didiBBSignalSell == true || didiTrixSignalSell == true
         || didiStochSignalSell == true || didiAdxSignalSell == true;
-      let msgDidiBuyHints = `(BB: ${didiBBSignalBuy}, trix: ${didiTrixSignalBuy},`
+
+      let msgDidiBuyHints = `(bb: ${didiBBSignalBuy}, trix: ${didiTrixSignalBuy},`
       msgDidiBuyHints += ` stochastic: ${didiStochSignalBuy}, adx: ${didiAdxSignalBuy})`
-      let msgDidiSellHints = `(BB: ${didiBBSignalSell}, trix: ${didiTrixSignalSell},`
+      let msgDidiSellHints = `(bb: ${didiBBSignalSell}, trix: ${didiTrixSignalSell},`
       msgDidiSellHints += ` stochastic: ${didiStochSignalSell}, adx: ${didiAdxSignalSell})`
+
+      const aMsgDidiBuyHints = []
+      didiBBSignalBuy ? aMsgDidiBuyHints.push('bb') : undefined
+      didiTrixSignalBuy ? aMsgDidiBuyHints.push('trix') : undefined
+      didiStochSignalBuy ? aMsgDidiBuyHints.push('stoch') : undefined
+      didiAdxSignalBuy ? aMsgDidiBuyHints.push('adx') : undefined
+      const aMsgDidiSellHints = []
+      didiBBSignalSell ? aMsgDidiSellHints.push('bb') : undefined
+      didiTrixSignalSell ? aMsgDidiSellHints.push('trix') : undefined
+      didiStochSignalSell ? aMsgDidiSellHints.push('stoch') : undefined
+      didiAdxSignalSell ? aMsgDidiSellHints.push('adx') : undefined
+
       if (didiHighNeedle == true && didiBuyHints == true) {
         //const msg = `${symbol} ${interval} with High Needle ${msgDidiBuyHints}`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} with High Needle ${msgDidiBuyHints}`
-        messages.push(`${getGraphicLink(symbol, interval)} with High Needle ${msgDidiBuyHints}`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} with HIGH NEEDLE (conf by ${aMsgDidiBuyHints})`
+        messages.push(`${getGraphicLink(symbol, interval)} with HIGH NEEDLE (conf by ${aMsgDidiBuyHints})`)
       } else if (didiLowNeedle == true && didiSellHints == true) {
-        //const msg = `${symbol} ${interval} with Low Needle ${msgDidiSellHints}`;
+        //const msg = `${symbol} ${interval} with Low NEEDLE ${msgDidiSellHints}`;
         //telegramMessages.addMessage(htmlAlertFormatted(symbol, interval, currentClose, msg));
-        msgBody += `\n ${getGraphicLink(symbol, interval)} with Low Needle ${msgDidiSellHints}`
-        messages.push(`${getGraphicLink(symbol, interval)} with Low Needle ${msgDidiSellHints}`)
+        msgBody += `\n ${getGraphicLink(symbol, interval)} with LOW NEEDLE (conf by ${aMsgDidiSellHints})`
+        messages.push(`${getGraphicLink(symbol, interval)} with LOW NEEDLE (conf by ${aMsgDidiSellHints})`)
       }
 
       //console.log(msgBody)
       if (msgBody.trim().length > 0) {
-        telegramMessages.addMessage(`${msgTitle}${msgBody}`);
+        //telegramMessages.addMessage(`${msgTitle}${msgBody}`);
         messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))
       }
     }

@@ -1,5 +1,4 @@
-const { intervalSortOrder, compactNumber } = require("./util");
-const TelegramMessage = require("./telegram");
+const { intervalSortOrder } = require("./util");
 
 function getDifference(array1, array2) {
   return array1.filter(object1 => {
@@ -12,9 +11,9 @@ function getDifference(array1, array2) {
 
 module.exports = class AlertSignal {
 
-  constructor() {
+  constructor(telegramMessages) {
     this.alerts = [];
-    this.telegramMessages = new TelegramMessage();
+    this.telegramMessages = telegramMessages;
   }
 
   addAlert({ msgTitle, symbol, interval, message }) {
@@ -56,7 +55,7 @@ module.exports = class AlertSignal {
       const msgTitle = sendedAlerts[symbolAlerts][0].msgTitle
       let msgBody = ''
       for (var m in sendedAlerts[symbolAlerts]) {
-        msgBody += `  ${sendedAlerts[symbolAlerts][m].message}\n`
+        msgBody += `   ${sendedAlerts[symbolAlerts][m].message}\n`
       }
       //console.log('telegramMessages.addMessage', `${msgTitle}\n${msgBody}`);
       this.telegramMessages.addMessage(`${msgTitle}\n${msgBody}`);

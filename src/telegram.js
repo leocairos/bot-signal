@@ -18,12 +18,13 @@ module.exports = class TelegramMessage {
 
   addMessage(message) {
     this.MESSAGES.push(message);
-    console.log('addMessage', message)
-    console.log('\n\nthis.MESSAGES', this.MESSAGES, '\n\n')
+    //console.log('-----------------addMessage\n', message, '\n--------------------------------')
+    //console.log('\nthis.MESSAGES', this.MESSAGES, '\n---------------------\n')
   }
 
   async sendMessagesTelegram(parse_mode = 'html', disable_web_page_preview = true) {
     const messages = [...this.MESSAGES]
+    //console.log('\n\nthis.MESSAGES', this.MESSAGES, '\n\n')
     //messages.forEach(m => console.log('sendMessagesTelegram', m))
     //Group Messages to improve send limit (TelegramError: 429: Too Many Requests: retry after 5)
     const slicedMessages = getSlicedMessages([...this.MESSAGES])
@@ -32,12 +33,11 @@ module.exports = class TelegramMessage {
       .forEach(async message => {
         await new Promise(r => setTimeout(r, 4000));
         //console.log('-----m', message, CHAT_ID, '-------m')
-        const msgRet = await this.bot.telegram
+        await this.bot.telegram
           .sendMessage(
             CHAT_ID,
             message,
             { parse_mode, disable_web_page_preview })
-        //console.log('msgRet', msgRet)
       });
 
     this.MESSAGES = getDifference(this.MESSAGES, messages)
@@ -53,10 +53,10 @@ function getSlicedMessages(messages) {
   messages.forEach(m => {
     //console.log('message', m)
     if (msg.length + m.length < max_size)
-      msg += `${m}\n\n`
+      msg += `${m}\n`
     else {
       slicedMessage.push(msg);
-      msg = `${m}\n\n`;
+      msg = `${m}\n`;
     }
   })
 
