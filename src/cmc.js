@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { compactNumber } = require("./util");
+const { compactNumber } = require("./lib/util");
 
 const TOP_X_TO_FAVORITE = process.env.TOP_X_TO_FAVORITE || 20;
 const CMC_PRO_API_KEY = process.env.CMC_PRO_API_KEY;

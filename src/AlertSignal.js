@@ -1,4 +1,4 @@
-const { intervalSortOrder } = require("./util");
+const { intervalSortOrder } = require("./lib/util");
 
 function getDifference(array1, array2) {
   return array1.filter(object1 => {

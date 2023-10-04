@@ -1,4 +1,4 @@
-const TelegramMessage = require("./telegram");
+const TelegramMessage = require("../telegram");
 
 class LogStartMsg {
 

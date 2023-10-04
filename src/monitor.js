@@ -1,5 +1,5 @@
-const { RSI, MFI, EMA, bollingerBands, TRIX, Stochastic, ADX } = require("./indicators")
-const { formatNumber, compactNumber, getGraphicLink, intervalNext } = require("./util");
+const { RSI, MFI, EMA, bollingerBands, TRIX, Stochastic, ADX } = require("./lib/indicators")
+const { formatNumber, compactNumber, getGraphicLink, intervalNext } = require("./lib/util");
 const TelegramMessage = require("./telegram");
 const AlertSignal = require("./AlertSignal");
 const { calculateSR } = require("./lib/calculateSR");
@@ -63,9 +63,34 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
       const nextInterval = intervalNext(interval);
       const supportResistance = await calculateSR(symbol, nextInterval, 100);
       const srVariation = supportResistance.variation * 100;
+      const supportTick = supportResistance.support.tick;
+      const resistanceTick = supportResistance.resistance.tick;
+      const VAR_ALERT_SR = 5;
+      //const mediumSR = supportResistance.medium;
+      // let msgSR = ''
+      // if (currentClose >= mediumSR){
+      //   if (currentClose <= resistanceTick){
+      //     //acima do meio e abaixo ou igual a resitencia
+      //     const diffRes = resistanceTick - currentClose;
+      //     const varDiffRes = 
+      //     msgSR = `${}`
+      //   }else { 
+      //     // rompimento de resistencia
+      //     const diffRes = currentClose - resistanceTick;
+      //   }
+      // } else {
+      //   if (currentClose >= supportTick){
+      //     //abaixo do meio e acima ou igual ao suporte
+      //   }else { 
+      //     // rompimento de suporte
+      //   }
+      // }
+
       //console.log({ symbol, interval, nextInterval, srVariation, supportResistance });
-      if (srVariation > 5) {
-        messages.push(`${getGraphicLink(symbol, interval)} Support and Resistance variation ${srVariation.toFixed(2)}% ($ ${supportResistance.support.tick} to ${supportResistance.resistance.tick})`)
+      if (srVariation >= VAR_ALERT_SR) {
+        let msgAux = `${getGraphicLink(symbol, interval)} SR variation ${srVariation.toFixed(2)}% `
+        msgAux += `in ${nextInterval} ($${formatNumber(supportTick)} to $${formatNumber(resistanceTick)})`
+        messages.push(msgAux)
       }
 
       const ema9Var = ((currentClose / ema9.current - 1) * 100).toFixed(2);

@@ -5,7 +5,7 @@ const Exchange = require("./exchange");
 
 const { startMonitor, startMonitorTicker } = require("./monitor");
 const CMCInfo = require("./cmc");
-const { LogStartMsg, compactNumber } = require("./util");
+const { LogStartMsg, compactNumber } = require("./lib/util");
 
 const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];

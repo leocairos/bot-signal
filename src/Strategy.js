@@ -1,5 +1,5 @@
-const { RSI, MFI, EMA } = require("./indicators")
-const { formatNumber, htmlAlertFormatted } = require("./util");
+const { RSI, MFI, EMA } = require("./lib/indicators")
+const { formatNumber, htmlAlertFormatted } = require("./lib/util");
 const TelegramMessage = require("./telegram");
 
 const telegramMessages = new TelegramMessage();
