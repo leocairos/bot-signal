@@ -63,8 +63,8 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
       const nextInterval = intervalNext(interval);
       const supportResistance = await calculateSR(symbol, nextInterval, 100);
       const srVariation = supportResistance.variation * 100;
-      const supportTick = supportResistance.support.tick;
-      const resistanceTick = supportResistance.resistance.tick;
+      const supportTick = Number(supportResistance.support.tick);
+      const resistanceTick = Number(supportResistance.resistance.tick);
       const VAR_ALERT_SR = 5;
       //const mediumSR = supportResistance.medium;
       // let msgSR = ''
