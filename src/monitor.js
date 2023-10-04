@@ -66,30 +66,36 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
       const supportTick = Number(supportResistance.support.tick);
       const resistanceTick = Number(supportResistance.resistance.tick);
       const VAR_ALERT_SR = 5;
-      //const mediumSR = supportResistance.medium;
-      // let msgSR = ''
-      // if (currentClose >= mediumSR){
-      //   if (currentClose <= resistanceTick){
-      //     //acima do meio e abaixo ou igual a resitencia
-      //     const diffRes = resistanceTick - currentClose;
-      //     const varDiffRes = 
-      //     msgSR = `${}`
-      //   }else { 
-      //     // rompimento de resistencia
-      //     const diffRes = currentClose - resistanceTick;
-      //   }
-      // } else {
-      //   if (currentClose >= supportTick){
-      //     //abaixo do meio e acima ou igual ao suporte
-      //   }else { 
-      //     // rompimento de suporte
-      //   }
-      // }
+      const VAR_SR_LIMIT = 0.2; //20%
+      const mediumSR = supportResistance.medium;
+      const rBottLimit = resistanceTick - (resistanceTick * srVariation * VAR_SR_LIMIT);
+      const sBottLimit = supportTick + (resistanceTick * srVariation * VAR_SR_LIMIT);
+
+      let msgSR = ''
+      if (currentClose >= mediumSR) {
+        //above the middle and below or equal to the resistance
+        if (currentClose <= resistanceTick) {
+          if (currentClose >= rBottLimit) // No limit for alert
+            msgSR = ` is close to the RESISTANCE at ${nextInterval}`
+        } else {
+          // breaking resistance
+          msgSR = ` broke the RESISTANCE in ${nextInterval}`
+        }
+      } else {
+        //below the middle and above or equal to the support
+        if (currentClose >= supportTick) {
+          if (currentClose <= sBottLimit) // No limit for alert
+            msgSR = ` is close to the SUPPORT at ${nextInterval}`
+        } else {
+          //breaking support
+          msgSR = ` broke the SUPPORT in ${nextInterval}`
+        }
+      }
 
       //console.log({ symbol, interval, nextInterval, srVariation, supportResistance });
-      if (srVariation >= VAR_ALERT_SR) {
-        let msgAux = `${getGraphicLink(symbol, interval)} SR variation ${srVariation.toFixed(2)}% `
-        msgAux += `in ${nextInterval} ($${formatNumber(supportTick)} to $${formatNumber(resistanceTick)})`
+      if (srVariation >= VAR_ALERT_SR && msgSR.trim().length > 0) {
+        let msgAux = `${getGraphicLink(symbol, interval)} ${msgSR} (${srVariation.toFixed(2)}% `
+        msgAux += `in ${nextInterval} $${formatNumber(supportTick)} to $${formatNumber(resistanceTick)})`
         messages.push(msgAux)
       }
 
