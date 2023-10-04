@@ -65,6 +65,24 @@ function intervalSortOrder(interval) {
   }
 }
 
+function intervalNext(interval) {
+  switch (interval) {
+    case '1m': return '3m';
+    case '3m': return '5m';
+    case '5m': return '15m';
+    case '15m': return '30m';
+    case '30m': return '45m';
+    case '45m': return '1h';
+    case '1h': return '2h';
+    case '2h': return '3h';
+    case '3h': return '4h';
+    case '4h': return '1d';
+    case '1d': return '1w';
+    case '1w': return '1m';
+    case '1m': return '3m';
+  }
+}
+
 function compactNumber(value) {
   if (typeof value !== "number") return value;
 
@@ -105,5 +123,6 @@ module.exports = {
   htmlAlertFormatted,
   LogStartMsg,
   getGraphicLink,
-  intervalSortOrder
+  intervalSortOrder,
+  intervalNext
 }

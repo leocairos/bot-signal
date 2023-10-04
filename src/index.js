@@ -30,7 +30,7 @@ async function doRun() {
 
   const spotSymbols = await exchange.getSymbols();
 
-  logStartMsg.doLogStartMsg(`Monitoring all available symbols [${INTERVALS}] with quotes asset [${QUOTES}]:`);
+  logStartMsg.doLogStartMsg(`\nMonitoring all available symbols [${INTERVALS}] with quotes asset [${QUOTES}]:`);
   logStartMsg.doLogStartMsg(` - ${spotSymbols.length} spot symbols`)
 
   const cmcSymbolQUOTE = cmcInfo.filteredSymbolsWithQuote;
