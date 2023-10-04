@@ -10,6 +10,7 @@ const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHAN
 
 const RSI_LIMITS = process.env.RSI_LIMITS ? process.env.RSI_LIMITS.split(',') : [30, 70];
 const MFI_LIMITS = process.env.MFI_LIMITS ? process.env.MFI_LIMITS.split(',') : [20, 80];
+const SUPPORT_RESISTANCE_LIMIT = process.env.SUPPORT_RESISTANCE_LIMIT || 25;
 
 let ticker24h = {}
 
@@ -61,7 +62,7 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
 
       //Strategy 00 - Support and Resistance
       const nextInterval = intervalNext(interval);
-      const supportResistance = await calculateSR(symbol, nextInterval, 100);
+      const supportResistance = await calculateSR(symbol, nextInterval, SUPPORT_RESISTANCE_LIMIT);
       const srVariation = supportResistance.variation * 100;
       const supportTick = Number(supportResistance.support.tick);
       const resistanceTick = Number(supportResistance.resistance.tick);
@@ -95,7 +96,7 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
       //console.log({ symbol, interval, nextInterval, srVariation, supportResistance });
       if (srVariation >= VAR_ALERT_SR && msgSR.trim().length > 0) {
         let msgAux = `${getGraphicLink(symbol, interval)} ${msgSR} (${srVariation.toFixed(2)}% `
-        msgAux += `in ${nextInterval} $${formatNumber(supportTick)} to $${formatNumber(resistanceTick)})`
+        msgAux += `between $${formatNumber(supportTick)} and $${formatNumber(resistanceTick)})`
         messages.push(msgAux)
       }
 
