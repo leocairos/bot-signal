@@ -229,13 +229,9 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
       const ema8Var = ((currentClose / ema8.current - 1) * 100).toFixed(2);
       const change = ((currentClose / previousClose - 1) * 100).toFixed(2);
 
-      messages.push(`${interval} $ ${formatNumber(currentClose)}  ${change}%`)
-      //Estratégia 01 - Only for example
-      if (currentClose < ema8.current && ema8Var < -0.5) {
-        messages.push(`${getGraphicLink(symbol, interval)} last close LOWER than ema8 ($ ${formatNumber(ema8.current)} ${ema8Var}%)`)
-      } else if (currentClose > ema8.current && ema8Var > 0.5) {
-        messages.push(`${getGraphicLink(symbol, interval)} last close UPPER than ema8 ($ ${formatNumber(ema8.current)})`)
-      }
+      messages.push(`${getGraphicLink(symbol, interval)}`,
+        ` ${formatNumber(currentClose)} ${change}% `,
+        ` ema8: ${formatNumber(ema8.current)} ${ema8Var}%`)
 
       if (messages.length > 0) {
         messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))
