@@ -4,6 +4,8 @@ const TelegramMessage = require("./telegram");
 const AlertSignal = require("./AlertSignal");
 const { calculateSR } = require("./lib/calculateSR");
 
+const PROCESS_MODE = process.env.PROCESS_MODE;
+
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL || 60;
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
@@ -253,8 +255,10 @@ setInterval(async () => {
 }, SEND_ALERT_INTERVAL * 1000)
 
 async function startMonitor(exchange, symbol, interval, isFuture = false) {
-  //return await exchange.chartStream(symbol, interval, doProcess, isFuture);
-  return await exchange.chartStream(symbol, interval, doProcessV2, isFuture);
+  if (PROCESS_MODE === 1)
+    return await exchange.chartStream(symbol, interval, doProcess, isFuture);
+  else
+    return await exchange.chartStream(symbol, interval, doProcessV2, isFuture);
 }
 
 function updateTicker24h(mkt) {

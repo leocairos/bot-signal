@@ -10,6 +10,11 @@ const { LogStartMsg, compactNumber } = require("./lib/util");
 const QUOTES = process.env.QUOTES ? process.env.QUOTES.split(',') : ["USDT"];
 const INTERVALS = process.env.INTERVALS ? process.env.INTERVALS.split(',') : ["15m"];
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL || 60;
+const PROCESS_MODE = process.env.PROCESS_MODE
+  ? `${process.env.PROCESS_MODE}`.includes(1, 2)
+    ? process.env.PROCESS_MODE
+    : 2
+  : 2;
 
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
 const MINIMUM_PERCENT_CHANGE_ALERT = parseFloat(process.env.MINIMUM_PERCENT_CHANGE_ALERT) || 0;
@@ -19,7 +24,7 @@ const cmcInfo = new CMCInfo(logStartMsg);
 
 async function doRun() {
 
-  logStartMsg.doLogStartMsg(`${description} v${version}`);
+  logStartMsg.doLogStartMsg(`${description} v${version} (mode ${PROCESS_MODE})`);
   logStartMsg.doLogStartMsg(`  System started at ${new Date().toUTCString()}\n`);
 
   await cmcInfo.updateCmcInfo();
