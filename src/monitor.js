@@ -194,6 +194,56 @@ const doProcess = async (cmcInfo, symbol, interval, ohlc) => {
 
 }
 
+const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
+  const ema8 = EMA(ohlc.close, 8);
+
+  //Ensures that there is already data for calculating indicators
+  const isOkToProcess = isCalculated(ema8);
+
+  //console.log(cmcInfo.getSymbolLink(symbol))
+  if (isOkToProcess) {
+    const ticker = ticker24h[symbol];
+    const quoteVolume = parseFloat(ticker?.quoteVolume) || 0;
+    const percentChange = parseFloat(ticker?.percentChange) || 0;
+    const currentClose = ohlc.close[ohlc.close.length - 1]
+    const previousClose = ohlc.close[ohlc.close.length - 2]
+
+    //Quote when not stablecoin dollar paired
+    const quote = cmcInfo.getQuoteByCoinPair(symbol);
+    const quoteUsdValue = cmcInfo.getUsdValue(quote);
+    const isQuoteAlert = quoteVolume * quoteUsdValue >= MINIMUM_QUOTE_VOLUME_ALERT;
+    const isPercentAlert = Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT;
+
+    //Críterios comum para ativação de avaliação de estratégia
+    if ((isQuoteAlert && isPercentAlert)) {
+      console.log(`Ready to evaluate ${symbol}_${interval}`.padEnd(32),
+        `$ `, `${formatNumber(currentClose)}`.padStart(9),
+        ` ema8:`, `${formatNumber(ema8.current)}`.padStart(9));
+
+      let msgTitle = `<b>${cmcInfo.getSymbolLink(symbol)} $ ${formatNumber(currentClose)}`
+      msgTitle += ` (last 24h ${percentChange.toFixed(2)}% volume ${compactNumber(quoteVolume)})</b>`
+      const messages = []
+
+      const ema8Var = ((currentClose / ema8.current - 1) * 100).toFixed(2);
+      const change = ((currentClose / previousClose - 1) * 100).toFixed(2);
+
+      messages.push(`${interval} $ ${formatNumber(currentClose)}  ${change}%`)
+      //Estratégia 01 - Only for example
+      if (currentClose < ema8.current && ema8Var < -0.5) {
+        messages.push(`${getGraphicLink(symbol, interval)} last close LOWER than ema8 ($ ${formatNumber(ema8.current)} ${ema8Var}%)`)
+      } else if (currentClose > ema8.current && ema8Var > 0.5) {
+        messages.push(`${getGraphicLink(symbol, interval)} last close UPPER than ema8 ($ ${formatNumber(ema8.current)})`)
+      }
+
+      if (messages.length > 0) {
+        messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))
+      }
+    }
+
+  }
+
+}
+
 //Verifica se tem alertas a cada X Segundos e envia pelo Telegram
 setInterval(async () => {
   alertSignal.sendTelegramMessage();
@@ -203,7 +253,8 @@ setInterval(async () => {
 }, SEND_ALERT_INTERVAL * 1000)
 
 async function startMonitor(exchange, symbol, interval, isFuture = false) {
-  return await exchange.chartStream(symbol, interval, doProcess, isFuture);
+  //return await exchange.chartStream(symbol, interval, doProcess, isFuture);
+  return await exchange.chartStream(symbol, interval, doProcessV2, isFuture);
 }
 
 function updateTicker24h(mkt) {
