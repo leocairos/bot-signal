@@ -229,8 +229,9 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
 
       const ema8Var = ((currentClose / ema8.current - 1) * 100).toFixed(2);
       const change = ((currentClose / previousClose - 1) * 100).toFixed(2);
+      const iconTimeChange = change > 0 ? `🟢` : `🔴`;
 
-      messages.push(`${getGraphicLinkV2(symbol, interval)} ${change}% EMA8 ${formatNumber(ema8.current)}${quote} ${ema8Var}%`)
+      messages.push(`${getGraphicLinkV2(symbol, interval)} ${iconTimeChange} ${change}% EMA8 ${formatNumber(ema8.current)}${quote} ${ema8Var}%`)
 
       if (messages.length > 0) {
         messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))

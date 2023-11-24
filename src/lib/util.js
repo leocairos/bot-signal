@@ -48,6 +48,7 @@ function intervalTradingViewConvert(interval) {
 }
 
 function intervalSortOrder(interval) {
+  console.log('\n\n', interval, '\n\n')
   switch (interval) {
     case '1m': return 1;
     case '3m': return 3;
@@ -56,12 +57,12 @@ function intervalSortOrder(interval) {
     case '30m': return 30;
     case '45m': return 45;
     case '1h': return 60;
-    case '2h': return 120;
-    case '3h': return 180;
-    case '4h': return 240;
+    case '2h': return 60 * 2;
+    case '3h': return 60 * 3;
+    case '4h': return 60 * 4;
     case '1d': return 60 * 24;
     case '1w': return 60 * 24 * 7;
-    case '1m': return 60 * 24 * 7 * 30;
+    case '1M': return 60 * 24 * 7 * 30;
   }
 }
 
