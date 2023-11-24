@@ -1,5 +1,5 @@
 const { RSI, MFI, EMA, bollingerBands, TRIX, Stochastic, ADX } = require("./lib/indicators")
-const { formatNumber, compactNumber, getGraphicLink, intervalNext } = require("./lib/util");
+const { formatNumber, compactNumber, getGraphicLink, getGraphicLinkV2, intervalNext } = require("./lib/util");
 const TelegramMessage = require("./telegram");
 const AlertSignal = require("./AlertSignal");
 const { calculateSR } = require("./lib/calculateSR");
@@ -216,6 +216,7 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
     const isQuoteAlert = quoteVolume * quoteUsdValue >= MINIMUM_QUOTE_VOLUME_ALERT;
     const isPercentAlert = Math.abs(percentChange) >= MINIMUM_PERCENT_CHANGE_ALERT;
 
+    const icon24h = percentChange > 0 ? `🟢` : `🔴`;
     //Críterios comum para ativação de avaliação de estratégia
     if ((isQuoteAlert && isPercentAlert)) {
       console.log(`Ready to evaluate ${symbol}_${interval}`.padEnd(32),
@@ -223,13 +224,13 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
         ` ema8:`, `${formatNumber(ema8.current)}`.padStart(9));
 
       let msgTitle = `<b>${cmcInfo.getSymbolLink(symbol)} $ ${formatNumber(currentClose)}`
-      msgTitle += ` (last 24h ${percentChange.toFixed(2)}% volume ${compactNumber(quoteVolume)})</b>`
+      msgTitle += ` ${icon24h} ${percentChange.toFixed(2)}% Vol.: ${compactNumber(quoteVolume)}</b>`
       const messages = []
 
       const ema8Var = ((currentClose / ema8.current - 1) * 100).toFixed(2);
       const change = ((currentClose / previousClose - 1) * 100).toFixed(2);
 
-      messages.push(`${getGraphicLink(symbol, interval)} ${formatNumber(currentClose)}${quote} (${change}%) ema8: ${formatNumber(ema8.current)}${quote} (${ema8Var}%)`)
+      messages.push(`${getGraphicLinkV2(symbol, interval)} ${change}% EMA8 ${formatNumber(ema8.current)}${quote} ${ema8Var}%`)
 
       if (messages.length > 0) {
         messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))

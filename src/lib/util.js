@@ -109,6 +109,11 @@ function getGraphicLink(symbol, interval) {
   return `<a href="${url}">${symbol} ${interval}</a>`
 }
 
+function getGraphicLinkV2(symbol, interval) {
+  const url = `https://www.tradingview.com/chart/?symbol=BINANCE:${symbol}&interval=${intervalTradingViewConvert(interval)}`;
+  return `<a href="${url}">${interval}</a>`
+}
+
 function htmlAlertFormatted(symbol, interval, close, msg) {
   const graphLink = getGraphicLink(symbol, interval)
 
@@ -123,6 +128,7 @@ module.exports = {
   htmlAlertFormatted,
   LogStartMsg,
   getGraphicLink,
+  getGraphicLinkV2,
   intervalSortOrder,
   intervalNext
 }
