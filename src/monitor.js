@@ -223,8 +223,8 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
         `$ `, `${formatNumber(currentClose)}`.padStart(9),
         ` ema8:`, `${formatNumber(ema8.current)}`.padStart(9));
 
-      let msgTitle = `${icon24h} <b>${cmcInfo.getSymbolLink(symbol)} $ ${formatNumber(currentClose)}`
-      msgTitle += ` ${percentChange.toFixed(2)}% Vol.: ${compactNumber(quoteVolume)}</b>`
+      let msgTitle = `${icon24h} <b>${cmcInfo.getSymbolLink(symbol)} $ ${formatNumber(currentClose)}</b>`
+      msgTitle += ` <i>${percentChange.toFixed(2)}%</i> Vol.: ${compactNumber(quoteVolume)}`
       const messages = []
 
       const ema8Var = ((currentClose / ema8.current - 1) * 100).toFixed(2);
