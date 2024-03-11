@@ -5,6 +5,7 @@ const AlertSignal = require("./AlertSignal");
 const { calculateSR } = require("./lib/calculateSR");
 
 const PROCESS_MODE = process.env.PROCESS_MODE;
+const EMA_CLOSE_TO = process.env.EMA_CLOSE_TO || 0.05;
 
 const SEND_ALERT_INTERVAL = process.env.SEND_ALERT_INTERVAL || 60;
 const MINIMUM_QUOTE_VOLUME_ALERT = parseFloat(process.env.MINIMUM_QUOTE_VOLUME_ALERT) || 0;
@@ -242,6 +243,63 @@ const doProcessV2 = async (cmcInfo, symbol, interval, ohlc) => {
 
 }
 
+const doProcessV3 = async (cmcInfo, symbol, interval, ohlc) => {
+  const ema20 = EMA(ohlc.close, 20);
+  const ema50 = EMA(ohlc.close, 50);
+  const distanceEma20ToEma50 = ema20.current / ema50.current - 1; //ema20 less -0.02 || ema20 upper 0.02
+  const ema20Var = (distanceEma20ToEma50 * 100).toFixed(2);
+
+  const ticker = ticker24h[symbol];
+  const quoteVolume = parseFloat(ticker?.quoteVolume) || 0;
+  const percentChange = parseFloat(ticker?.percentChange) || 0;
+  const currentClose = ohlc.close[ohlc.close.length - 1]
+  const previousClose = ohlc.close[ohlc.close.length - 2]
+  const change = ((currentClose / previousClose - 1) * 100).toFixed(2);
+
+  //Ensures that there is already data for calculating indicators
+  const isOkToProcess = isCalculated(ema50);
+
+  console.log(`Evaluate ${symbol} ${interval}`.padEnd(25),
+    `$ `, `${formatNumber(currentClose)}`.padStart(10), `${change}%`.padStart(9),
+    ` ema20:`, `${formatNumber(ema20?.current)}`.padStart(10),
+    ` ema50:`, `${formatNumber(ema50?.current)}`.padStart(10),
+    `${ema20Var}%`.padStart(9));
+  //console.log(cmcInfo.getSymbolLink(symbol))
+  if (isOkToProcess) {
+
+    //Quote when not stablecoin dollar paired
+    const quote = cmcInfo.getQuoteByCoinPair(symbol);
+    const quoteUsdValue = cmcInfo.getUsdValue(quote);
+    const isQuoteAlert = quoteVolume * quoteUsdValue >= MINIMUM_QUOTE_VOLUME_ALERT;
+
+    const isEma20CloseToEma50 =
+      (distanceEma20ToEma50 >= EMA_CLOSE_TO * -1)
+      && (distanceEma20ToEma50 <= EMA_CLOSE_TO * 1);
+
+    const icon24h = percentChange > 0 ? `🟢` : `🔴`;
+    //Críterios comum para ativação de avaliação de estratégia
+    if ((isQuoteAlert && isEma20CloseToEma50)) {
+      // console.log(`Ready to evaluate ${symbol}_${interval}`.padEnd(25),
+      //   `$ `, `${formatNumber(currentClose)}`.padStart(10),
+      //   ` ema20:`, `${formatNumber(ema20.current)}`.padStart(10),
+      //   ` ema50:`, `${formatNumber(ema50.current)}`.padStart(10));
+
+      let msgTitle = `${icon24h} <b>${cmcInfo.getSymbolLink(symbol)} $ ${formatNumber(currentClose)}</b>`
+      msgTitle += ` <i>${percentChange.toFixed(2)}%</i> Vol.: ${compactNumber(quoteVolume)}`
+      const messages = []
+      const iconTimeChange = change > 0 ? `🟢` : `🔴`;
+
+      messages.push(`${iconTimeChange} ${getGraphicLinkV2(symbol, interval)} ${change}% EMA20/EMA50 ${formatNumber(ema20.current)}/${formatNumber(ema50.current)} ${ema20Var}%`)
+
+      if (messages.length > 0) {
+        messages.forEach(message => alertSignal.addAlert({ msgTitle, symbol, interval, message }))
+      }
+    }
+
+  }
+
+}
+
 //Verifica se tem alertas a cada X Segundos e envia pelo Telegram
 setInterval(async () => {
   alertSignal.sendTelegramMessage();
@@ -251,10 +309,13 @@ setInterval(async () => {
 }, SEND_ALERT_INTERVAL * 1000)
 
 async function startMonitor(exchange, symbol, interval, isFuture = false) {
-  if (PROCESS_MODE === 1)
-    return await exchange.chartStream(symbol, interval, doProcess, isFuture);
-  else
+  //console.log(PROCESS_MODE, symbol, interval)
+  if (`${PROCESS_MODE}` === '3')
+    return await exchange.chartStream(symbol, interval, doProcessV3, isFuture);
+  else if (`${PROCESS_MODE}` === '2')
     return await exchange.chartStream(symbol, interval, doProcessV2, isFuture);
+  else
+    return await exchange.chartStream(symbol, interval, doProcess, isFuture);
 }
 
 function updateTicker24h(mkt) {
