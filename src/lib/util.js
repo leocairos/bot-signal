@@ -48,7 +48,7 @@ function intervalTradingViewConvert(interval) {
 }
 
 function intervalSortOrder(interval) {
-  console.log('\n\n', interval, '\n\n')
+  //console.log('\n\n', interval, '\n\n')
   switch (interval) {
     case '1m': return 1;
     case '3m': return 3;
